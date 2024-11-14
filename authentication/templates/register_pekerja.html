@@ -53,7 +53,8 @@
 </head>
 <body>
     <div class="container">
-        <form action="register_pekerja_process.html" method="post">
+        <form method="post" id="reg-form">
+            {% csrf_token %}
             <label for="nama">Nama:</label>
             <input type="text" id="nama" name="nama" required>
 
@@ -96,7 +97,7 @@
             <label for="photo_url">URL Foto:</label>
             <input type="url" id="photo_url" name="photo_url" required>
 
-            <button type="submit" class="register-btn">Register</button>
+            <button type="submit" class="register-btn" form="reg-form">Register</button>
         </form>
     </div>
 </body>

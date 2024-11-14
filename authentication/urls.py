@@ -7,7 +7,6 @@ urlpatterns = [
     path("register/", register, name="register"),
     path("login/", login_user, name="login"),
     path("logout/", logout_user, name="logout"),
-    path("login-mobile/", login_mobile, name="login_mobile"),
-    path("logout-mobile/", logout_mobile, name="logout_mobile"),
-    path("register-mobile/", register_mobile, name="register_mobile")
+    path('register/register_pengguna/', registrasi_pengguna, name='register_pengguna'),
+    path('register/register_pekerja/', registrasi_pekerja, name='register_pekerja'),
 ]

@@ -51,7 +51,8 @@
 </head>
 <body>
     <div class="container">
-        <form action="register_pengguna_process.html" method="post">
+        <form method="post" id="reg-form">
+            {% csrf_token %}
             <label for="nama">Nama:</label>
             <input type="text" id="nama" name="nama" required>
 
@@ -75,7 +76,7 @@
             <label for="address">Alamat:</label>
             <input type="text" id="address" name="address" required>
 
-            <button type="submit" class="register-btn">Register</button>
+            <button type="submit" class="register-btn" form="reg-form">Register</button>
         </form>
     </div>
 </body>

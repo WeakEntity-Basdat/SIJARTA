@@ -7,80 +7,44 @@ from django.urls import reverse
 from authentication.forms import RegisterForm
 from authentication.models import UserProfile
 from django.views.decorators.csrf import csrf_exempt
-import json
+import json# auth/views.py
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.contrib.auth.models import User
+from django.db import IntegrityError
+
 
 # Create your views here.
 
-
 def login_user(request):
     if request.method == "POST":
-        username = request.POST.get("username")
+        phone = request.POST.get("phone")
         password = request.POST.get("password")
+
+        # Retrieve the user based on phone number from UserProfile
+        try:
+            user_profile = UserProfile.objects.get(phone_number=phone)
+            username = user_profile.user.username  # Get the associated username
+        except UserProfile.DoesNotExist:
+            messages.error(request, "Sorry, this phone number is not registered.")
+            return render(request, "login.html")
+
+        # Authenticate using the username and password
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
             next_page = request.GET.get("next")
-            if next_page is None:
-                response = redirect("main:show_main")
-            else:
-                response = redirect(next_page)
-            response.set_cookie("user_logged_in", user)
-            return response
+            if next_page:
+                return redirect(next_page)
+            return redirect("main:show_main")
         else:
-            messages.info(
-                request, "Sorry, incorrect username or password. Please try again.")
-    context = {}
+            messages.error(request, "Sorry, incorrect phone number or password. Please try again.")
+
+    # Redirect to main if already authenticated
     if request.user.is_authenticated:
-        return redirect('main:show_main')
-    else:
-        return render(request, "login.html", context)
-
-
-@csrf_exempt
-def login_mobile(request):
-    username = request.POST.get('username')
-    password = request.POST.get('password')
-    user = authenticate(username=username, password=password)
-    if user is not None:
-        if user.is_active:
-            login(request, user)
-            return JsonResponse({
-                "username": user.username,
-                "fullname": user.userprofile.full_name,
-                "id": user.id,
-                "type": user.userprofile.user_type,
-                "status": True,
-                "message": "Login successful!"
-            }, status=200)
-        else:
-            return JsonResponse({
-                "status": False,
-                "message": "Login failed. Account is deactivated."
-            }, status=401)
-
-    else:
-        return JsonResponse({
-            "status": False,
-            "message": "Login failed. Try again."
-        }, status=401)
-
-
-@csrf_exempt
-def logout_mobile(request):
-    username = request.user.username
-    try:
-        logout(request)
-        return JsonResponse({
-            "username": username,
-            "status": True,
-            "message": "Logout successful!"
-        }, status=200)
-    except:
-        return JsonResponse({
-            "status": False,
-            "message": "Logout failed."
-        }, status=401)
-
+        return redirect("main:show_main")
+    
+    return render(request, "login.html")
 
 def register(request):
     form = RegisterForm()
@@ -92,50 +56,103 @@ def register(request):
                 request, 'Your account has been successfully created!')
             return redirect('authentication:login')
     context = {"form": form}
+    # ganti
     if request.user.is_authenticated:
-        return redirect('main:show_main')
+        return render(request, "register.html", context)
     else:
         return render(request, "register.html", context)
 
 
-@csrf_exempt
-def register_mobile(request):
-    if request.method == "POST":
-        data = json.loads(request.body)
+def registrasi_pengguna(request):
+    if request.method == 'POST':
+        full_name = request.POST.get('nama')
+        password = request.POST.get('password')
+        gender = request.POST.get('gender')
+        phone_number = request.POST.get('phone')
+        birthdate = request.POST.get('birthdate')
+        address = request.POST.get('address')
 
-        if User.objects.filter(username=data["username"]).exists():
-            return JsonResponse({
-                "status": False,
-                "message": "Register failed. Account with that username already exists."
-            }, status=401)
+        # Validate all fields
+        if not all([full_name, password, gender, phone_number, birthdate, address]):
+            messages.error(request, "All fields are required.")
+            return render(request, 'register_pengguna.html')
 
-        if data["password1"] != data["password2"]:
-            return JsonResponse({
-                "status": False,
-                "message": "Register failed. The two passwords don't match."
-            }, status=401)
-        user = User.objects.create_user(
-            username=data["username"],
-            email=data["email"],
-            password=data["password1"]
-        )
-        user.save()
+        # Check for unique phone number
+        if UserProfile.objects.filter(phone_number=phone_number).exists():
+            messages.error(request, "This phone number is already registered. Please log in.")
+            return redirect('authentication:login')
 
-        user_profile = UserProfile.objects.create(
-            user=user,
-            full_name=data["full_name"].strip(),
-            user_type=data["user_type"].strip(),
-        )
-        user_profile.save()
-        return JsonResponse({
-            "status": True,
-            "message": "Register successful"
-        }, status=201)
-    else:
-        return JsonResponse({
-            "status": False,
-            "message": "Register failed. Use POST method."
-        }, status=401)
+        try:
+            # Create User and UserProfile for pengguna
+            user = User.objects.create_user(username=phone_number, password=password)
+            user_profile = UserProfile(
+                user=user,
+                full_name=full_name,
+                user_type='pengguna',  # Set user_type to 'pengguna'
+                gender=gender,
+                phone_number=phone_number,
+                birthdate=birthdate,
+                address=address
+            )
+            user_profile.save()
+
+            messages.success(request, "Registration successful! Please log in.")
+            return redirect('login.html')
+        except IntegrityError:
+            messages.error(request, "An error occurred. Please try again.")
+            return render(request, 'register_pengguna.html')
+
+    return render(request, 'register_pengguna.html')
+
+
+def registrasi_pekerja(request):
+    if request.method == 'POST':
+        full_name = request.POST.get('nama')
+        password = request.POST.get('password')
+        gender = request.POST.get('gender')
+        phone_number = request.POST.get('phone')
+        birthdate = request.POST.get('birthdate')
+        address = request.POST.get('address')
+        bank_name = request.POST.get('bank')
+        account_number = request.POST.get('account')
+        npwp = request.POST.get('npwp')
+        photo_url = request.POST.get('photo_url')
+
+        # Validate all fields
+        if not all([full_name, password, gender, phone_number, birthdate, address, bank_name, account_number, npwp, photo_url]):
+            messages.error(request, "All fields are required.")
+            return render(request, 'register_pekerja.html')
+
+        # Check for unique phone number
+        if UserProfile.objects.filter(phone_number=phone_number).exists():
+            messages.error(request, "This phone number is already registered. Please log in.")
+            return redirect('authentication:login')
+
+        try:
+            # Create User and UserProfile for pekerja
+            user = User.objects.create_user(username=phone_number, password=password)
+            user_profile = UserProfile(
+                user=user,
+                full_name=full_name,
+                user_type='pekerja',  # Set user_type to 'pekerja'
+                gender=gender,
+                phone_number=phone_number,
+                birthdate=birthdate,
+                address=address
+            )
+            user_profile.bank_name = bank_name
+            user_profile.account_number = account_number
+            user_profile.npwp = npwp
+            user_profile.photo_url = photo_url
+            user_profile.save()
+
+            messages.success(request, "Registration successful! Please log in.")
+            return redirect('main:landing_page')
+        except IntegrityError:
+            messages.error(request, "An error occurred. Please try again.")
+            return render(request, 'register_pekerja.html')
+
+    return render(request, 'register_pekerja.html')
 
 
 def logout_user(request):
