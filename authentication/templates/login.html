@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Login</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            border: 1px solid black;
+            padding: 20px;
+            width: 300px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+        h2 {
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            text-align: left;
+        }
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            box-sizing: border-box;
+        }
+        .login-btn {
+            margin-top: 20px;
+            padding: 10px;
+            width: 100%;
+            cursor: pointer;
+            border: 1px solid black;
+            background-color: white;
+        }
+        .error-message {
+            color: red;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Form Login</h2>
+        <form id="reg-form" method="POST">
+            {% csrf_token %}
+            <label for="phone">No Hp:</label>
+            <input type="text" id="phone" name="phone" required>
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+
+            <button type="submit" class="login-btn">Login</button>
+
+            {% if error_message %}
+                <p class="error-message">{{ error_message }}</p>
+            {% endif %}
+        </form>
+    </div>
+</body>
+</html>

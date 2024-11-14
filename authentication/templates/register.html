@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIJARTA Landing Page</title>
+    <title>Register Options</title>
     <style>
         body {
             display: flex;
@@ -19,12 +19,12 @@
             padding: 20px;
             width: 300px;
         }
-        h1 {
+        h2 {
             font-size: 24px;
             margin-bottom: 20px;
         }
         .button {
-            width: 100px;
+            width: 150px;
             padding: 10px;
             margin: 10px 0;
             cursor: pointer;
@@ -38,9 +38,9 @@
 </head>
 <body>
     <div class="container">
-        <h1>SIJARTA By &lt;Nama Kelompok&gt;</h1>
-        <a href="{% url 'authentication:login' %}" class="button">Login</a>
-        <a href="{% url 'authentication:register' %}" class="button">Register</a>
+        <h2>Choose Your Role</h2>
+        <a href="register_pekerja" class="button">Pekerja</a>
+        <a href="register_pengguna" class="button">Pengguna</a>
     </div>
 </body>
 </html>
