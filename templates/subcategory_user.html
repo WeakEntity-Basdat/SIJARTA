@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>{{ subcategory.name }}</h1>
+<p>{{ subcategory.description }}</p>
+
+<h2>Available Service Sessions</h2>
+<table>
+    <tr>
+        <th>Session Name</th>
+        <th>Price</th>
+        <th>Action</th>
+    </tr>
+    {% for session in sessions %}
+    <tr>
+        <td>{{ session.name }}</td>
+        <td>{{ session.price }}</td>
+        <td><button>Button Pesan</button></td>
+    </tr>
+    {% endfor %}
+</table>
+
+<h2>Available Workers</h2>
+<div>
+    {% for worker in workers %}
+        <div>{{ worker.full_name }}</div>
+    {% endfor %}
+</div>
+{% endblock %} 
