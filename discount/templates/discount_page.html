@@ -1,0 +1,35 @@
+
+{% block content %}
+
+<h1>DISKON</h1>
+<div>
+    <h2>Voucher</h2>
+    {% for voucher in vouchers %}
+        <div>
+            <p>Kode: {{ voucher.code }}</p>
+            <p>Potongan: {{ voucher.discount }}%</p>
+            <p>Min Transaksi: {{ voucher.min_order_amount }}</p>
+            <p>Jumlah Hari Berlaku: {{ voucher.valid_days }}</p>
+            <p>Kuota Penggunaan: {{ voucher.usage_quota }}</p>
+            <p>Harga: {{ voucher.price }}</p>
+            <a href="{% url 'purchase_voucher' voucher.id %}">Beli</a>
+        </div>
+    {% endfor %}
+</div>
+<div>
+    <h2>Promo</h2>
+    {% for promo in promos %}
+        <div>
+            <p>Kode: {{ promo.code }}</p>
+            <p>Tanggal Akhir Berlaku: {{ promo.end_date }}</p>
+        </div>
+    {% endfor %}
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>
+    {% endfor %}
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,86 @@
+{% load static %}
+<nav class="header bg-[#F8BBD0] sticky top-0 z-10">
+    <div class="container mx-auto flex font-raleway font-medium justify-between items-center py-3 md:py-4 px-2 md:px-0">
+        <div class="left-logo flex items-center">
+            <a href="#" id="menu-open-btn" class="md:hidden pr-2">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+                    <path fill-rule="evenodd" d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10zm0 5.25a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75a.75.75 0 01-.75-.75z" clip-rule="evenodd" />
+                </svg>
+            </a>
+            <a href="/" class="flex items-center w-32 md:w-40">
+                <img src="{% static 'img/sampingwhite_480.png' %}" width="160px"/>
+            </a>
+        </div>
+
+        <div class="flex items-center gap-8">
+            {% if user.is_authenticated %}
+                <!-- Navbar for Authenticated Users -->
+                <div class="hidden md:flex text-[#003f7e] gap-8 -mb-1">
+                    <a class="nav-btn" href="{% url 'main:show_main' %}">Homepage</a>
+                    
+                    {% if user.userprofile.user_type == 'pengguna' %}
+                        <!-- Pengguna Navbar Links -->
+                        <a class="nav-btn" href="/mypay">MyPay</a>
+                        <a class="nav-btn" href="/orders">Kelola Pesanan Saya</a>
+                        <a class="nav-btn" href="/discount">Diskon</a>
+                        <a class="nav-btn" href="/profile">Profile</a>
+                    {% elif user.userprofile.user_type == 'pekerja' %}
+                        <!-- Pekerja Navbar Links -->
+                        <a class="nav-btn" href="/mytasks">Kelola Pekerjaan Saya</a>
+                        <a class="nav-btn" href="/task-status">Kelola Status Pekerjaan</a>
+                        <a class="nav-btn" href="/mypay">MyPay</a>
+                        <a class="nav-btn" href="/profile">Profile</a>
+                    {% endif %}
+                    
+                    <a class="nav-btn" href="/auth/logout">Logout</a>
+                </div>
+                
+                <!-- Mobile Dropdown for Authenticated Users -->
+                <div class="md:hidden">
+                    <button onclick="toggleDropdown()">Menu</button>
+                    <div id="dropdown-content-mobile" class="hidden">
+                        <ul>
+                            <li><a href="{% url 'main:show_main' %}">Homepage</a></li>
+                            {% if user.userprofile.user_type == 'pengguna' %}
+                                <li><a href="/mypay">MyPay</a></li>
+                                <li><a href="/orders">Kelola Pesanan Saya</a></li>
+                                <li><a href="/discount">Diskon</a></li>
+                                <li><a href="/profile">Profile</a></li>
+                            {% elif user.userprofile.user_type == 'pekerja' %}
+                                <li><a href="/mytasks">Kelola Pekerjaan Saya</a></li>
+                                <li><a href="/task-status">Kelola Status Pekerjaan</a></li>
+                                <li><a href="/mypay">MyPay</a></li>
+                                <li><a href="/profile">Profile</a></li>
+                            {% endif %}
+                            <li><a href="/auth/logout">Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            {% else %}
+                <!-- Navbar for Guest Users -->
+                <div class="hidden md:flex text-[#003f7e] gap-8 -mb-1">
+                    <a class="nav-btn" href="/auth/login">Login</a>
+                    <a class="nav-btn" href="/auth/register">Register</a>
+                </div>
+
+                <!-- Mobile Dropdown for Guest Users -->
+                <div class="md:hidden">
+                    <button onclick="toggleDropdown()">Menu</button>
+                    <div id="dropdown-content-mobile" class="hidden">
+                        <ul>
+                            <li><a href="/auth/login">Login</a></li>
+                            <li><a href="/auth/register">Register</a></li>
+                        </ul>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+
+<script>
+    function toggleDropdown() {
+        const dropdown = document.getElementById('dropdown-content-mobile');
+        dropdown.classList.toggle('hidden');
+    }
+</script>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Pekerja</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            border: 1px solid black;
+            padding: 20px;
+            width: 300px;
+            box-sizing: border-box;
+        }
+        .container label {
+            display: block;
+            margin-top: 10px;
+        }
+        .container input[type="text"],
+        .container input[type="password"],
+        .container input[type="date"],
+        .container input[type="url"],
+        .container select {
+            width: calc(100% - 20px);
+            padding: 5px;
+            margin-top: 5px;
+            box-sizing: border-box;
+        }
+        .gender {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+        .gender label {
+            margin: 0 10px 0 5px;
+        }
+        .register-btn {
+            margin-top: 20px;
+            padding: 10px;
+            width: 100%;
+            cursor: pointer;
+            border: 1px solid black;
+            background-color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <form method="post" id="reg-form">
+            {% csrf_token %}
+            <label for="nama">Nama:</label>
+            <input type="text" id="nama" name="nama" required>
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+
+            <label>Jenis Kelamin:</label>
+            <div class="gender">
+                <input type="radio" id="male" name="gender" value="L" required>
+                <label for="male">L</label>
+                <input type="radio" id="female" name="gender" value="P" required>
+                <label for="female">P</label>
+            </div>
+
+            <label for="phone">NoHP:</label>
+            <input type="text" id="phone" name="phone" required>
+
+            <label for="birthdate">Tanggal Lahir:</label>
+            <input type="date" id="birthdate" name="birthdate" required>
+
+            <label for="address">Alamat:</label>
+            <input type="text" id="address" name="address" required>
+
+            <label for="bank">Nama Bank:</label>
+            <select id="bank" name="bank" required>
+                <option value="">Pilih Bank</option>
+                <option value="GoPay">GoPay</option>
+                <option value="OVO">OVO</option>
+                <option value="Virtual Account BCA">Virtual Account BCA</option>
+                <option value="Virtual Account BNI">Virtual Account BNI</option>
+                <option value="Virtual Account Mandiri">Virtual Account Mandiri</option>
+            </select>
+
+            <label for="account">No Rekening:</label>
+            <input type="text" id="account" name="account" required>
+
+            <label for="npwp">NPWP:</label>
+            <input type="text" id="npwp" name="npwp" required>
+
+            <label for="photo_url">URL Foto:</label>
+            <input type="url" id="photo_url" name="photo_url" required>
+
+            <button type="submit" class="register-btn" form="reg-form">Register</button>
+        </form>
+    </div>
+</body>
+</html>
