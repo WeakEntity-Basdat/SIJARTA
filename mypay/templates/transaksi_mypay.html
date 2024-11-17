@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaksi MyPay</title>
+</head>
+<body>
+    <h1>Form Transaksi MyPay</h1>
+    <div>
+        <p><strong>Tanggal Transaksi:</strong> {{ current_date }}</p>
+        <p><strong>Nama User:</strong> {{ user.nama }}</p>
+        <p><strong>Saldo User:</strong> Rp. {{ user.saldo }}</p>
+    </div>
+    <form method="POST">
+        {% csrf_token %}
+        <label for="kategori_transaksi">Kategori Transaksi:</label>
+        <select id="kategori_transaksi" name="kategori_transaksi" onchange="updateForm()" required>
+            <option value="" disabled selected>Pilih Kategori</option>
+            <option value="topup">TopUp MyPay</option>
+            <option value="bayar">Membayar Transaksi Jasa</option>
+            <option value="transfer">Transfer MyPay</option>
+            <option value="withdrawal">Withdrawal</option>
+        </select><br><br>
+
+        <div id="form_state">
+            <!-- Form dinamis akan muncul di sini -->
+        </div>
+
+        <button type="submit">Submit</button>
+        <button class="button" onclick="window.location.href='{% url 'mypay:mypay_view' %}'">
+            Kembali
+        </button>
+    </form>
+
+    <script>
+        function updateForm() {
+            const kategori = document.getElementById("kategori_transaksi").value;
+            const formState = document.getElementById("form_state");
+            formState.innerHTML = "";
+
+            if (kategori === "topup") {
+                formState.innerHTML = `
+                    <label for="nominal_topup">Nominal:</label>
+                    <input type="number" id="nominal_topup" name="nominal_topup" required><br><br>
+                `;
+            } else if (kategori === "bayar") {
+                formState.innerHTML = `
+                    <label for="pesanan_jasa">Pesanan Jasa:</label>
+                    <select id="pesanan_jasa" name="pesanan_jasa" required>
+                        <option value="" disabled selected>Pilih Jasa</option>
+                        {% for jasa in jasa_list %}
+                        <option value="{{ jasa.id }}">{{ jasa.nama }} - Rp. {{ jasa.harga }}</option>
+                        {% endfor %}
+                    </select><br><br>
+                `;
+            } else if (kategori === "transfer") {
+                formState.innerHTML = `
+                    <label for="nohp_tujuan">No HP Tujuan:</label>
+                    <input type="text" id="nohp_tujuan" name="nohp_tujuan" required><br><br>
+                    <label for="nominal_transfer">Nominal:</label>
+                    <input type="number" id="nominal_transfer" name="nominal_transfer" required><br><br>
+                `;
+            } else if (kategori === "withdrawal") {
+                formState.innerHTML = `
+                    <label for="nama_bank">Nama Bank:</label>
+                    <select id="nama_bank" name="nama_bank" required>
+                        <option value="" disabled selected>Pilih Bank</option>
+                        {% for bank in bank_list %}
+                        <option value="{{ bank.id }}">{{ bank.nama }}</option>
+                        {% endfor %}
+                    </select><br><br>
+                    <label for="no_rekening">No Rekening:</label>
+                    <input type="text" id="no_rekening" name="no_rekening" required><br><br>
+                    <label for="nominal_withdrawal">Nominal:</label>
+                    <input type="number" id="nominal_withdrawal" name="nominal_withdrawal" required><br><br>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

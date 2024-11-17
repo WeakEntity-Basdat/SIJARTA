@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pekerjaan Jasa</title>
+</head>
+<body>
+    <h1>Pekerjaan Jasa</h1>
+    <form method="GET">
+        <label for="kategori">Kategori Jasa:</label>
+        <select id="kategori" name="kategori" onchange="updateSubkategori()">
+            <option value="" disabled selected>Pilih Kategori</option>
+            {% for kategori in kategori_list %}
+            <option value="{{ kategori.id }}">{{ kategori.nama }}</option>
+            {% endfor %}
+        </select>
+        
+        <label for="subkategori">Subkategori Jasa:</label>
+        <select id="subkategori" name="subkategori">
+            <option value="" disabled selected>Pilih Subkategori</option>
+            <!-- Subkategori akan diperbarui dengan JavaScript -->
+        </select>
+
+        <button type="submit">Search</button>
+    </form>
+
+    <h2>Hasil Pencarian</h2>
+    <table border="1" style="width: 100%; border-collapse: collapse;">
+        <thead>
+            <tr>
+                <th>Nama Subkategori Pesanan</th>
+                <th>Nama Pelanggan</th>
+                <th>Tanggal Pemesanan</th>
+                <th>Tanggal Pekerjaan</th>
+                <th>Total Biaya</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pesanan in pesanan_list %}
+            <tr>
+                <td>{{ pesanan.nama_subkategori }}</td>
+                <td>{{ pesanan.pelanggan }}</td>
+                <td>{{ pesanan.tanggal_pemesanan }}</td>
+                <td>{{ pesanan.tanggal_pekerjaan }}</td>
+                <td>Rp. {{ pesanan.total_biaya }}</td>
+                <td>
+                    {% if pesanan.status == "Mencari Pekerja Terdekat" %}
+                    <form method="POST" action="{% url 'pekerjajasa:kerjakan_pesanan_view' pesanan.id %}">
+                        {% csrf_token %}
+                        <button type="submit">Kerjakan Pesanan</button>
+                    </form>
+                    {% else %}
+                    <button disabled>Sedang Dikerjakan</button>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6">Tidak ada pesanan yang ditemukan</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <script>
+        const subkategoriData = {{ subkategori_list|safe }};
+        function updateSubkategori() {
+            const kategoriId = document.getElementById("kategori").value;
+            const subkategoriSelect = document.getElementById("subkategori");
+            subkategoriSelect.innerHTML = '<option value="" disabled selected>Pilih Subkategori</option>';
+
+            if (subkategoriData[kategoriId]) {
+                subkategoriData[kategoriId].forEach(sub => {
+                    const option = document.createElement("option");
+                    option.value = sub.id;
+                    option.textContent = sub.nama;
+                    subkategoriSelect.appendChild(option);
+                });
+            }
+        }
+    </script>
+</body>
+</html>
