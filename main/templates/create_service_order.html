@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="modal" id="serviceOrderModal">
+    <div class="modal-content">
+        <h2>Pesan Jasa</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Pesan Jasa</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    // JavaScript to handle modal display
+    function openModal() {
+        document.getElementById('serviceOrderModal').style.display = 'block';
+    }
+
+    function closeModal() {
+        document.getElementById('serviceOrderModal').style.display = 'none';
+    }
+</script>
+{% endblock %}
