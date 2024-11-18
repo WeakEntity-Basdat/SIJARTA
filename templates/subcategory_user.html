@@ -111,9 +111,9 @@
 
 {% block content %}
 <div class="container">
-    <h1>{{ subcategory.name }}</h1>
-    <h2>Kategori: {{ subcategory.category.name }}</h2>
-    <p class="description">{{ subcategory.description }}</p>
+    <h1>Dummy Subcategory Name</h1>
+    <h2>Kategori: Dummy Category Name</h2>
+    <p class="description">This is a dummy description for the subcategory.</p>
 
     <!-- Service Sessions Section -->
     <div class="service-section">
@@ -127,15 +127,27 @@
                 </tr>
             </thead>
             <tbody>
-                {% for session in sessions %}
                 <tr>
-                    <td>{{ session.name }}</td>
-                    <td>Rp {{ session.price }}</td>
+                    <td>Dummy Service Session 1</td>
+                    <td>Rp 100,000</td>
                     <td>
                         <button class="action-button" onclick="openModal()">Pesan Jasa</button>
                     </td>
                 </tr>
-                {% endfor %}
+                <tr>
+                    <td>Dummy Service Session 2</td>
+                    <td>Rp 150,000</td>
+                    <td>
+                        <button class="action-button" onclick="openModal()">Pesan Jasa</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Dummy Service Session 3</td>
+                    <td>Rp 200,000</td>
+                    <td>
+                        <button class="action-button" onclick="openModal()">Pesan Jasa</button>
+                    </td>
+                </tr>
             </tbody>
         </table>
     </div>
@@ -144,22 +156,26 @@
     <div class="worker-section">
         <h3>Pekerja</h3>
         <div class="worker-list">
-            {% for worker in workers %}
-            <div class="worker-card">{{ worker.full_name }}</div>
-            {% endfor %}
+            <div class="worker-card">John Doe</div>
+            <div class="worker-card">Jane Smith</div>
+            <div class="worker-card">Alice Johnson</div>
+            <div class="worker-card">Bob Brown</div>
         </div>
     </div>
 
     <!-- Testimonial Section -->
     <div class="testimonial-section">
         <h3>Testimoni</h3>
-        {% for testimonial in testimonials %}
         <div class="testimonial">
-            <strong>{{ testimonial.user_name }}</strong>
-            <span>{{ testimonial.date }}</span>
-            <p>{{ testimonial.text }}</p>
+            <strong>User 1</strong>
+            <span>2023-10-01</span>
+            <p>This service was excellent!</p>
         </div>
-        {% endfor %}
+        <div class="testimonial">
+            <strong>User 2</strong>
+            <span>2023-10-02</span>
+            <p>I had a great experience!</p>
+        </div>
     </div>
 </div>
 
