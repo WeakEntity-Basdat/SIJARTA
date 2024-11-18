@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block meta %}
+<title>Profile Pekerja</title>
+{% endblock meta %}
+
+{% block content %}
+<div class="container mx-auto mt-10">
+    <div class="flex justify-between w-3/4 mx-auto">
+        <!-- Info Profil -->
+        <div class="info w-1/2">
+            <p><strong>Nama:</strong> {{ user_profile.full_name }}</p>
+            <p><strong>Jenis Kelamin:</strong> {{ user_profile.gender }}</p>
+            <p><strong>No HP:</strong> {{ user_profile.phone_number }}</p>
+            <p><strong>Tanggal Lahir:</strong> {{ user_profile.birthdate|date:"Y-m-d" }}</p>
+            <p><strong>Alamat:</strong> {{ user_profile.address }}</p>
+            <p><strong>Saldo MyPay:</strong> {{ user_profile.saldo_mypay }}</p>
+            <p><strong>Nama Bank:</strong> {{ user_profile.bank_name }}</p>
+            <p><strong>No Rekening:</strong> {{ user_profile.account_number }}</p>
+            <p><strong>NPWP:</strong> {{ user_profile.npwp }}</p>
+            <p><strong>Rating:</strong> {{ user_profile.rating }}</p>
+            <p><strong>Jumlah Pesanan Selesai:</strong> {{ user_profile.completed_orders_count }}</p>
+            <p><strong>Kategori Pekerjaan:</strong></p>
+            <ul class="list-disc ml-6">
+                {% for kategori in user_profile.job_categories.all %}
+                    <li>{{ kategori }}</li>
+                {% empty %}
+                    <li>Belum ada kategori pekerjaan.</li>
+                {% endfor %}
+            </ul>
+            <button onclick="document.getElementById('update-form').style.display = 'block';" class="bg-blue-500 text-white px-4 py-2 mt-4 rounded">Update</button>
+        </div>
+
+        <!-- Form Update -->
+        <div id="update-form" class="update-form w-1/2" style="display:none;">
+            <form method="POST">
+                {% csrf_token %}
+                <label for="nama">Nama:</label>
+                <input type="text" name="full_name" value="{{ user_profile.full_name }}" class="border rounded w-full px-3 py-2 mb-4" required>
+            
+                <label>Jenis Kelamin:</label>
+                <div class="mb-4">
+                    <input type="radio" name="gender" value="L" {% if user_profile.gender == 'L' %}checked{% endif %}> L
+                    <input type="radio" name="gender" value="P" {% if user_profile.gender == 'P' %}checked{% endif %}> P
+                </div>
+            
+                <label for="no_hp">No HP:</label>
+                <input type="text" name="phone_number" value="{{ user_profile.phone_number }}" class="border rounded w-full px-3 py-2 mb-4" required>
+            
+                <label for="tanggal_lahir">Tanggal Lahir:</label>
+                <input type="date" name="birthdate" value="{{ user_profile.birthdate|date:'Y-m-d' }}" class="border rounded w-full px-3 py-2 mb-4" required>
+            
+                <label for="alamat">Alamat:</label>
+                <input type="text" name="address" value="{{ user_profile.address }}" class="border rounded w-full px-3 py-2 mb-4" required>
+            
+                <label for="nama_bank">Nama Bank:</label>
+                <select name="bank_name" class="border rounded w-full px-3 py-2 mb-4">
+                    <option value="GoPay" {% if user_profile.bank_name == 'GoPay' %}selected{% endif %}>GoPay</option>
+                    <option value="OVO" {% if user_profile.bank_name == 'OVO' %}selected{% endif %}>OVO</option>
+                    <option value="Virtual Account BCA" {% if user_profile.bank_name == 'Virtual Account BCA' %}selected{% endif %}>Virtual Account BCA</option>
+                    <option value="Virtual Account BNI" {% if user_profile.bank_name == 'Virtual Account BNI' %}selected{% endif %}>Virtual Account BNI</option>
+                    <option value="Virtual Account Mandiri" {% if user_profile.bank_name == 'Virtual Account Mandiri' %}selected{% endif %}>Virtual Account Mandiri</option>
+                </select>
+            
+                <label for="no_rekening">No Rekening:</label>
+                <input type="text" name="account_number" value="{{ user_profile.account_number }}" class="border rounded w-full px-3 py-2 mb-4" required>
+            
+                <label for="npwp">NPWP:</label>
+                <input type="text" name="npwp" value="{{ user_profile.npwp }}" class="border rounded w-full px-3 py-2 mb-4">
+            
+                <label for="url_foto">URL Foto:</label>
+                <input type="text" name="photo_url" value="{{ user_profile.photo_url }}" class="border rounded w-full px-3 py-2 mb-4">
+            
+                <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">Submit</button>
+            </form>
+            
+        </div>
+    </div>
+</div>
+{% endblock content %}
