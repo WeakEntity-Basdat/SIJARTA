@@ -39,6 +39,10 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "main",
     "authentication",
+    "discount",
+    "mypay",
+    "pekerjajasa",
+    "testimoni",
 ]
 
 MIDDLEWARE = [
