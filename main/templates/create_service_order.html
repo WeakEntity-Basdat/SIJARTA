@@ -1,16 +1,34 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="modal" id="serviceOrderModal">
+<div class="modal" id="serviceOrderModal" style="display: none;">
     <div class="modal-content">
         <h2>Pesan Jasa</h2>
         <form method="post">
             {% csrf_token %}
-            {{ form.as_p }}
+            <label for="order_date">Tanggal Pemesanan:</label>
+            <input type="date" id="order_date" name="order_date" required>
+            
+            <label for="discount_code">Diskon:</label>
+            <input type="text" id="discount_code" name="discount_code" placeholder="Kode Diskon">
+            
+            <label>Total Pembayaran:</label>
+            <p>Rp <span id="total_payment">xxx.xxx,xx</span></p>
+            
+            <label for="payment_method">Metode Pembayaran:</label>
+            <select id="payment_method" name="payment_method" required>
+                <option value="">Pilih Metode</option>
+                <option value="credit_card">Kartu Kredit</option>
+                <option value="bank_transfer">Transfer Bank</option>
+                <option value="cash">Tunai</option>
+            </select>
+            
             <button type="submit">Pesan Jasa</button>
         </form>
     </div>
 </div>
+
+<button class="action-button" onclick="openModal()">Pesan Jasa</button>
 
 <script>
     // JavaScript to handle modal display
