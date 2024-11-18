@@ -7,3 +7,4 @@ def landing_page(request):
 
 def show_main(request):
     return render(request,'homepage.html')
+

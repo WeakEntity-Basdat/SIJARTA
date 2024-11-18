@@ -12,9 +12,80 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.db import IntegrityError
+from django.contrib.auth.decorators import login_required
 
 
 # Create your views here.
+
+
+def profile(request):
+    # Check if the user has a profile associated with their account
+    try:
+        user_profile = request.user.userprofile
+    except UserProfile.DoesNotExist:
+        messages.error(request, "Profile not found.")
+        return redirect('main:show_main')
+
+    if request.method == 'POST':
+        # Retrieve data from the form submission
+        nama = request.POST.get('full_name')  # Match form field name
+        jenis_kelamin = request.POST.get('gender')  # Match form field name
+        no_hp = request.POST.get('phone_number')  # Match form field name
+        tanggal_lahir = request.POST.get('birthdate')  # Match form field name
+        alamat = request.POST.get('address')  # Match form field name
+
+        # Update user profile fields
+        user_profile.full_name = nama
+        user_profile.gender = jenis_kelamin
+        user_profile.phone_number = no_hp
+        user_profile.birthdate = tanggal_lahir
+        user_profile.address = alamat
+        user_profile.save()
+
+        # Success message
+        messages.success(request, "Profile updated successfully.")
+        return redirect('authentication:profile_pengguna')  # Redirect back to the profile page
+
+    # Context data for rendering the profile page
+    context = {
+        'user_profile': user_profile,
+    }
+    return render(request, 'profile.html', context)
+
+
+def profile_pekerja(request):
+    # Ensure the user is authenticated and has a profile
+    try:
+        user_profile = request.user.userprofile
+        if user_profile.user_type != 'pekerja':
+            messages.error(request, "You do not have access to this page.")
+            return redirect('main:show_main')
+    except UserProfile.DoesNotExist:
+        messages.error(request, "Profile not found.")
+        return redirect('main:show_main')
+
+    if request.method == 'POST':
+        # Fetch data from the form
+        user_profile.full_name = request.POST.get('full_name')
+        user_profile.gender = request.POST.get('gender')
+        user_profile.phone_number = request.POST.get('phone_number')
+        user_profile.birthdate = request.POST.get('birthdate')
+        user_profile.address = request.POST.get('address')
+        user_profile.bank_name = request.POST.get('bank_name')
+        user_profile.account_number = request.POST.get('account_number')
+        user_profile.npwp = request.POST.get('npwp')
+        user_profile.photo_url = request.POST.get('photo_url')
+        user_profile.save()
+
+        messages.success(request, "Profile updated successfully.")
+        return redirect('authentication:profile_pekerja')
+
+
+    # Context to pass to the template
+    context = {
+        'user_profile': user_profile,
+    }
+    return render(request, 'profile_pekerja.html', context)
 
 def login_user(request):
     if request.method == "POST":
