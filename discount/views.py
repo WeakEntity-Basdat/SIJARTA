@@ -7,14 +7,16 @@ from django.contrib.auth.decorators import login_required
 
 @login_required
 def discount_page(request):
-    # Check if the user is of type 'pengguna'
-    if request.user.userprofile.user_type != 'pengguna':
-        messages.error(request, "You do not have permission to access this page.")
-        return redirect('main:show_main')  # Redirect to a relevant page for 'pekerja'
+    # # Check if the user is of type 'pengguna'
+    # if request.user.userprofile.user_type != 'pengguna':
+    #     messages.error(request, "You do not have permission to access this page.")
+    #     return redirect('main:show_main')  # Redirect to a relevant page for 'pekerja'
     
-    vouchers = Voucher.objects.all()
-    promos = Promo.objects.filter(end_date__gte=timezone.now())
-    return render(request, 'discount_page.html', {'vouchers': vouchers, 'promos': promos})
+    # vouchers = Voucher.objects.all()
+    # promos = Promo.objects.filter(end_date__gte=timezone.now())
+    return render(request, 'discount_page.html')
+                  
+                #   {'vouchers': vouchers, 'promos': promos})
 
 @login_required
 def purchase_voucher(request, voucher_id):

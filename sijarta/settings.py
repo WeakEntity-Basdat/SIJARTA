@@ -40,6 +40,9 @@ INSTALLED_APPS = [
     "main",
     "authentication",
     "discount",
+    "mypay",
+    "pekerjajasa",
+    "testimoni",
 ]
 
 MIDDLEWARE = [

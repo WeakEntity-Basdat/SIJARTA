@@ -1,0 +1,76 @@
+<!-- templates/mypay.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyPay</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: center;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .header div {
+            margin: 0 10px;
+        }
+        .button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            cursor: pointer;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>MyPay</h1>
+    <div class="header">
+        <div>
+            <h3>No HP: 08123456789</h3> 
+        </div>
+        <div>
+            <h3>Saldo: Rp. 500.000</h3>
+        </div>
+        <button class="button" onclick="window.location.href='{% url 'mypay:transaksi_mypay_view' %}'">
+            Lakukan Transaksi
+        </button>
+    </div>
+
+    <h2>Riwayat Transaksi</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>+/- Nominal</th>
+                <th>Tanggal</th>
+                <th>Kategori Transaksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for transaksi in riwayat_transaksi %}
+            <tr>
+                <td>{{ transaksi.nominal }}</td>
+                <td>{{ transaksi.tanggal }}</td>
+                <td>{{ transaksi.kategori }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

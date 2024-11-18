@@ -23,13 +23,13 @@
                         <a class="nav-btn" href="/mypay">MyPay</a>
                         <a class="nav-btn" href="/orders">Kelola Pesanan Saya</a>
                         <a class="nav-btn" href="/discount">Diskon</a>
-                        <a class="nav-btn" href="/profile">Profile</a>
+                        <a class="nav-btn" href="{% url 'authentication:profile_pengguna' %}">Profile</a>
                     {% elif user.userprofile.user_type == 'pekerja' %}
                         <!-- Pekerja Navbar Links -->
                         <a class="nav-btn" href="/mytasks">Kelola Pekerjaan Saya</a>
                         <a class="nav-btn" href="/task-status">Kelola Status Pekerjaan</a>
                         <a class="nav-btn" href="/mypay">MyPay</a>
-                        <a class="nav-btn" href="/profile">Profile</a>
+                        <a class="nav-btn" href="{% url 'authentication:profile_pekerja' %}">Profile</a>
                     {% endif %}
                     
                     <a class="nav-btn" href="/auth/logout">Logout</a>
@@ -45,12 +45,12 @@
                                 <li><a href="/mypay">MyPay</a></li>
                                 <li><a href="/orders">Kelola Pesanan Saya</a></li>
                                 <li><a href="/discount">Diskon</a></li>
-                                <li><a href="/profile">Profile</a></li>
+                                <li><a href="{% url 'authentication:profile_pengguna' %}">Profile</a></li>
                             {% elif user.userprofile.user_type == 'pekerja' %}
                                 <li><a href="/mytasks">Kelola Pekerjaan Saya</a></li>
                                 <li><a href="/task-status">Kelola Status Pekerjaan</a></li>
                                 <li><a href="/mypay">MyPay</a></li>
-                                <li><a href="/profile">Profile</a></li>
+                                <li><a href="{% url 'authentication:profile_pekerja' %}">Profile</a></li>
                             {% endif %}
                             <li><a href="/auth/logout">Logout</a></li>
                         </ul>

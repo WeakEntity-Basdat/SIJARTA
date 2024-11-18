@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+    }
+    h1 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    .category-container {
+        margin-bottom: 20px;
+    }
+    .category-title {
+        font-weight: bold;
+        margin-top: 10px;
+    }
+    .subcategory-list {
+        list-style-type: none;
+        padding: 0;
+    }
+    .subcategory-list li {
+        margin: 5px 0;
+    }
+    .button {
+        padding: 10px;
+        background-color: #007BFF;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+    .button:hover {
+        background-color: #0056b3;
+    }
+</style>
+
+{% block content %}
+<h1>Welcome to SIJARTA!</h1>
+
+<div>
+    <label for="category">Kategori</label>
+    <select id="category">
+        <option value="">Select Category</option>
+        <option value="1">Kategori Jasa 1</option>
+        <option value="2">Kategori Jasa 2</option>
+        <option value="3">Kategori Jasa 3</option>
+    </select>
+
+    <label for="subcategory">Nama Subkategori</label>
+    <select id="subcategory">
+        <option value="">Select Subcategory</option>
+        <option value="1">Subkategori Jasa 1</option>
+        <option value="2">Subkategori Jasa 2</option>
+        <option value="3">Subkategori Jasa 3</option>
+    </select>
+
+    <input type="text" placeholder="Search" />
+    <button type="button">Search</button>
+</div>
+
+<div class="category-container">
+    <div class="category-title">Kategori Jasa 1</div>
+    <ul class="subcategory-list">
+        <li><button class="button" onclick="redirectTo('subcategory_user', '{{ user_type }}')">Subkategori Jasa 1</button></li>
+        <li><button class="button" onclick="redirectTo('subcategory_user', '{{ user_type }}')">Subkategori Jasa 2</button></li>
+        <li><button class="button" onclick="redirectTo('subcategory_user', '{{ user_type }}')">Subkategori Jasa 3</button></li>
+    </ul>
+</div>
+
+<div class="category-container">
+    <div class="category-title">Kategori Jasa 2</div>
+    <ul class="subcategory-list">
+        <li><button class="button" onclick="redirectTo('subcategory_user', '{{ user_type }}')">Subkategori Jasa 1</button></li>
+        <li><button class="button" onclick="redirectTo('subcategory_user', '{{ user_type }}')">Subkategori Jasa 2</button></li>
+        <li><button class="button" onclick="redirectTo('subcategory_user', '{{ user_type }}')">Subkategori Jasa 3</button></li>
+    </ul>
+</div>
+
+<div class="category-container">
+    <div class="category-title">Kategori Jasa 3</div>
+    <ul class="subcategory-list">
+        <li><button class="button" onclick="redirectTo('subcategory_user', '{{ user_type }}')">Subkategori Jasa 1</button></li>
+        <li><button class="button" onclick="redirectTo('subcategory_user', '{{ user_type }}')">Subkategori Jasa 2</button></li>
+        <li><button class="button" onclick="redirectTo('subcategory_user', '{{ user_type }}')">Subkategori Jasa 3</button></li>
+    </ul>
+</div>
+
+<script>
+    function redirectTo(subcategory, userType) {
+        if (userType === 'pengguna') {
+            window.location.href = '/subcategory/user/1'; // Replace with actual URL for user
+        } else {
+            window.location.href = '/subcategory/worker/1'; // Replace with actual URL for worker
+        }
+    }
+</script>
+{% endblock %} 

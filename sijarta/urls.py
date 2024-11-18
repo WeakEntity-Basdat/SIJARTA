@@ -17,10 +17,17 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.urls import include
+from main import views as main_views  # Import view dari app main
+
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path('auth/', include('authentication.urls')),
-    path('', include('main.urls'))
+    path('main/', include('main.urls')),
+    path('', main_views.landing_page, name='landing_page'),  # Root URL diarahkan ke landing page
+    path('', include('main.urls')),
+    path('', include('mypay.urls')),
+    path('', include('pekerjajasa.urls')),
+    path('testimoni/', include('testimoni.urls')),
 
 ]
