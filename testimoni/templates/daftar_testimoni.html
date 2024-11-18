@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Daftar Testimoni</title>
+</head>
+<body>
+    <h1>Daftar Testimoni</h1>
+    <ul>
+        {% for t in testimoni %}
+            <li>
+                <strong>{{ t.subkategori.name }}</strong> - {{ t.nama_pekerja }}: {{ t.komentar }} ({{ t.rating }}/10)
+                <!-- Tombol Buat Testimoni Baru dengan parameter subcategory_id -->
+                <a href="{% url 'buat_testimoni' t.subkategori.id %}">Buat Testimoni Baru</a>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
