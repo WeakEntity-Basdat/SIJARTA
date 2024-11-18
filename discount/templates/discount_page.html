@@ -1,35 +1,83 @@
-
+{% extends 'base.html' %}
 {% block content %}
 
 <h1>DISKON</h1>
 <div>
     <h2>Voucher</h2>
-    {% for voucher in vouchers %}
-        <div>
-            <p>Kode: {{ voucher.code }}</p>
-            <p>Potongan: {{ voucher.discount }}%</p>
-            <p>Min Transaksi: {{ voucher.min_order_amount }}</p>
-            <p>Jumlah Hari Berlaku: {{ voucher.valid_days }}</p>
-            <p>Kuota Penggunaan: {{ voucher.usage_quota }}</p>
-            <p>Harga: {{ voucher.price }}</p>
-            <a href="{% url 'purchase_voucher' voucher.id %}">Beli</a>
-        </div>
-    {% endfor %}
-</div>
-<div>
-    <h2>Promo</h2>
-    {% for promo in promos %}
-        <div>
-            <p>Kode: {{ promo.code }}</p>
-            <p>Tanggal Akhir Berlaku: {{ promo.end_date }}</p>
-        </div>
-    {% endfor %}
+    <div>
+        <p>Kode: V150</p>
+        <p>Potongan: Rp50.000</p>
+        <p>Min Transaksi: Rp200.000</p>
+        <p>Jumlah Hari Berlaku: 30</p>
+        <p>Kuota Penggunaan: 1 Kali Pemakaian</p>
+        <p>Harga: Rp60.000</p>
+        <button onclick="showErrorModal()">Beli</button>
+    </div>
 </div>
 
-{% if messages %}
-    {% for message in messages %}
-        <div class="{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>
-    {% endfor %}
-{% endif %}
+<div>
+    <h2>Promo</h2>
+    <div>
+        <p>Kode: P120</p>
+        <p>Tanggal Akhir Berlaku: 12/12/2024</p>
+    </div>
+</div>
+
+<!-- Modal Sukses -->
+<div id="successModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <h2>SUKSES</h2>
+        <p>Selamat! Anda berhasil membeli voucher kode V150.</p>
+        <p>Voucher ini akan berlaku hingga tanggal 12/12/2024 dengan kuota penggunaan sebanyak 1 kali.</p>
+        <button onclick="closeModal('successModal')">Tutup</button>
+    </div>
+</div>
+
+<!-- Modal Gagal -->
+<div id="errorModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <h2>GAGAL</h2>
+        <p>Maaf, saldo Anda tidak cukup untuk membeli voucher ini.</p>
+        <button onclick="closeModal('errorModal')">Tutup</button>
+    </div>
+</div>
+
+<!-- CSS untuk Modal -->
+<style>
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+</style>
+
+<!-- JavaScript untuk Modal -->
+<script>
+function showSuccessModal() {
+    document.getElementById('successModal').style.display = 'flex';
+}
+
+function showErrorModal() {
+    document.getElementById('errorModal').style.display = 'flex';
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+}
+</script>
 
 {% endblock %}

@@ -5,20 +5,20 @@ from .models import Subcategory, Worker, Testimoni
 from main.models import ServiceSession, ServiceOrder
 
 
-def buat_testimoni(request, subcategory_id):
-    subcategory = get_object_or_404(Subcategory, id=subcategory_id)
+# def buat_testimoni(request, subcategory_id):
+#     subcategory = get_object_or_404(Subcategory, id=subcategory_id)
     
-    if request.method == 'POST':
-        form = TestimoniForm(request.POST)
-        if form.is_valid():
-            testimoni = form.save(commit=False)
-            testimoni.subkategori = subcategory
-            testimoni.save()
-            return redirect('subcategory_user', subcategory_id=subcategory.id)
-    else:
-        form = TestimoniForm()
+#     if request.method == 'POST':
+#         form = TestimoniForm(request.POST)
+#         if form.is_valid():
+#             testimoni = form.save(commit=False)
+#             testimoni.subkategori = subcategory
+#             testimoni.save()
+#             return redirect('subcategory_user', subcategory_id=subcategory.id)
+#     else:
+#         form = TestimoniForm()
     
-    return render(request, 'buat_testimoni.html', {'form': form, 'subcategory': subcategory})
+#     return render(request, 'buat_testimoni.html', {'form': form, 'subcategory': subcategory})
 
 
 def daftar_testimoni(request):
@@ -55,24 +55,25 @@ def subcategory_user(request, subcategory_id):
     })
 
 
-def buat_testimoni(request, subcategory_id):
-    """
-    View untuk menambahkan testimoni baru.
-    """
-    subcategory = get_object_or_404(Subcategory, id=subcategory_id)
+def buat_testimoni(request):
+    # """
+    # View untuk menambahkan testimoni baru.
+    # """
+    # subcategory = get_object_or_404(Subcategory, id=subcategory_id)
 
-    if request.method == 'POST':
-        form = TestimoniForm(request.POST)
-        if form.is_valid():
-            testimoni = form.save(commit=False)
-            testimoni.subkategori = subcategory
-            testimoni.user = request.user
-            testimoni.save()
-            return redirect('subcategory_user', subcategory_id=subcategory.id)
-    else:
-        form = TestimoniForm()
+    # if request.method == 'POST':
+    #     form = TestimoniForm(request.POST)
+    #     if form.is_valid():
+    #         testimoni = form.save(commit=False)
+    #         testimoni.subkategori = subcategory
+    #         testimoni.user = request.user
+    #         testimoni.save()
+    #         return redirect('subcategory_user', subcategory_id=subcategory.id)
+    # else:
+    #     form = TestimoniForm()
 
-    return render(request, 'buat_testimoni.html', {
-        'form': form,
-        'subcategory': subcategory,
-    })
+    return render(request, 'buat_testimoni.html')
+    #               {
+    #     'form': form,
+    #     'subcategory': subcategory,
+    # })
