@@ -2,8 +2,9 @@
 
 {% block content %}
 <h1>{{ subcategory.name }}</h1>
-<p>{{ subcategory.description }}</p>
+<p>{{ subcategory.category.name }}</p>
 
+<!-- Sesi Layanan -->
 <h2>Available Service Sessions</h2>
 <table>
     <tr>
@@ -15,15 +16,58 @@
     <tr>
         <td>{{ session.name }}</td>
         <td>{{ session.price }}</td>
-        <td><button>Button Pesan</button></td>
+        <td><button>Book Now</button></td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="3">No sessions available.</td>
     </tr>
     {% endfor %}
 </table>
 
-<h2>Available Workers</h2>
+<!-- Pekerja -->
+<h2>Workers</h2>
 <div>
     {% for worker in workers %}
-        <div>{{ worker.full_name }}</div>
+    <div>
+        <p>{{ worker.full_name }}</p>
+        <a href="{% url 'worker_profile' worker.id %}">View Profile</a>
+    </div>
+    {% empty %}
+    <p>No workers available for this subcategory.</p>
     {% endfor %}
 </div>
-{% endblock %} 
+
+<!-- Testimoni -->
+<h2>Testimonials</h2>
+<table>
+    <tr>
+        <th>User</th>
+        <th>Worker</th>
+        <th>Date</th>
+        <th>Rating</th>
+        <th>Comment</th>
+    </tr>
+    {% for t in testimoni %}
+    <tr>
+        <td>{{ t.user.username }}</td>
+        <td>{{ t.worker.full_name }}</td>
+        <td>{{ t.date }}</td>
+        <td>{{ t.rating }}/10</td>
+        <td>{{ t.comment }}</td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="5">No testimonials available.</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<!-- Tombol Add Testimonial -->
+{% if user_can_add_testimoni %}
+<a href="{% url 'buat_testimoni' subcategory.id %}">
+    <button>Add Testimonial</button>
+</a>
+{% endif %}
+
+{% endblock %}

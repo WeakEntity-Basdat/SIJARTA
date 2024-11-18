@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Buat Testimoni</title>
+</head>
+<body>
+    <h1>Buat Testimoni untuk {{ subcategory.name }}</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Submit</button>
+    </form>
+    <a href="{% url 'subcategory_detail' subcategory.id %}">Kembali</a>
+</body>
+</html>
