@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+    }
+    .profile-container {
+        border: 1px solid #ccc;
+        padding: 20px;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+    }
+    h1 {
+        text-align: center;
+    }
+</style>
+
+{% block content %}
+<div class="profile-container">
+    <h1>Profil Pekerja</h1>
+    <p><strong>Nama:</strong> John Doe</p>
+    <p><strong>Rating:</strong> 8/10</p>
+    <p><strong>Jumlah pesanan selesai:</strong> 15</p>
+    <p><strong>No HP:</strong> 123-456-7890</p>
+    <p><strong>Tanggal Lahir:</strong> 01/01/1990</p>
+    <p><strong>Alamat:</strong> 123 Main St, Anytown, USA</p>
+</div>
+{% endblock %} 
