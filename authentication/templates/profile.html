@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block meta %}
+<title>Profile Pengguna</title>
+{% endblock meta %}
+
+{% block content %}
+<div class="container mx-auto mt-10">
+    <div class="flex justify-between w-3/4 mx-auto">
+        <!-- Info Profil -->
+        <div class="info w-1/2">
+            <p><strong>Nama:</strong> {{ user_profile.full_name }}</p>
+            <p><strong>Jenis Kelamin:</strong> {{ user_profile.gender }}</p>
+            <p><strong>No HP:</strong> {{ user_profile.phone_number }}</p>
+            <p><strong>Tanggal Lahir:</strong> {{ user_profile.birthdate }}</p>
+            <p><strong>Alamat:</strong> {{ user_profile.address }}</p>
+            <button onclick="document.getElementById('update-form').style.display = 'block';" class="bg-blue-500 text-white px-4 py-2 mt-4 rounded">Update</button>
+        </div>
+
+        <!-- Form Update -->
+        <div id="update-form" class="update-form w-1/2" style="display:none;">
+            <form method="POST">
+                {% csrf_token %}
+                <label for="nama">Nama:</label>
+                <input type="text" name="full_name" value="{{ user_profile.full_name }}" class="border rounded w-full px-3 py-2 mb-4" required>
+
+                <label>Jenis Kelamin:</label>
+                <div class="mb-4">
+                    <input type="radio" name="gender" value="L" {% if user_profile.gender == 'L' %}checked{% endif %}> L
+                    <input type="radio" name="gender" value="P" {% if user_profile.gender == 'P' %}checked{% endif %}> P
+                </div>
+
+                <label for="phone_number">No HP:</label>
+                <input type="text" name="phone_number" value="{{ user_profile.phone_number }}" class="border rounded w-full px-3 py-2 mb-4" required>
+
+                <label for="birthdate">Tanggal Lahir:</label>
+                <input type="date" name="birthdate" value="{{ user_profile.birthdate|date:'Y-m-d' }}" class="border rounded w-full px-3 py-2 mb-4" required>
+
+                <label for="address">Alamat:</label>
+                <input type="text" name="address" value="{{ user_profile.address }}" class="border rounded w-full px-3 py-2 mb-4" required>
+
+                <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">Submit</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}

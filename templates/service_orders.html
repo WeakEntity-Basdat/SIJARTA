@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+<style>
+    .order-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+    .order-table th, .order-table td {
+        padding: 10px;
+        text-align: left;
+        border: 1px solid #ccc;
+    }
+    .action-button {
+        background-color: #007BFF;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        cursor: pointer;
+    }
+    .action-button:hover {
+        background-color: #0056b3;
+    }
+</style>
+
+{% block content %}
+<div>
+    <h1>Daftar Pemesanan Jasa</h1>
+    
+    <div>
+        <label for="subcategory">Subkategori:</label>
+        <select id="subcategory">
+            <option value="">Select Subcategory</option>
+            <!-- Populate with subcategories -->
+        </select>
+
+        <label for="order-status">Status Pesanan:</label>
+        <select id="order-status">
+            <option value="">Select Status</option>
+            <option value="pending">Pending</option>
+            <option value="completed">Completed</option>
+            <option value="canceled">Canceled</option>
+        </select>
+
+        <button class="action-button">Search</button>
+    </div>
+
+    <table class="order-table">
+        <tr>
+            <th>Subkategori Jasa</th>
+            <th>Sesi Layanan</th>
+            <th>Harga</th>
+            <th>Nama Pekerja</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+        {% for order in orders %}
+        <tr>
+            <td>{{ order.subcategory }}</td>
+            <td>{{ order.session }}</td>
+            <td>{{ order.price }}</td>
+            <td>{{ order.worker_name }}</td>
+            <td>{{ order.status }}</td>
+            <td>
+                {% if order.status == 'pending' %}
+                    <button class="action-button">Batalkan</button>
+                {% else %}
+                    <button class="action-button">Buat Testimoni</button>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}
