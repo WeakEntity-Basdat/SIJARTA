@@ -16,9 +16,7 @@ def set_user_type(request, user_id):
             cursor.execute("SELECT EXISTS(SELECT 1 FROM pelanggan WHERE id=%s)", [user_id])
             if cursor.fetchone()[0]:
                 request.session['user_type'] = 'pengguna'
-            else:
-                return render(request, 'homepage.html')
-
+                
 def homepage(request):
     # Check if user is authenticated, if so, set user type in session
     if request.user.is_authenticated:
