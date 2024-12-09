@@ -29,7 +29,11 @@ SECRET_KEY = "django-insecure-&e4dv8u1wbajaob#$#fk2j5pcrr4dq9deu$lg6&q1fas5^l++=
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "palastha-zhorif-weakentitysijarta.pbp.cs.ui.ac.id"]
+ALLOWED_HOSTS = [
+    'palastha-zhorif-weakentitysijarta.pbp.cs.ui.ac.id',
+    'localhost',
+    '127.0.0.1',
+]
 
 
 # Application definition
@@ -165,3 +169,9 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://palastha-zhorif-weakentitysijarta.pbp.cs.ui.ac.id',
+    'http://localhost',
+    'http://127.0.0.1',
+]
