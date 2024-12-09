@@ -125,6 +125,7 @@ def register_pekerja(request):
             return redirect('authentication:register_pekerja')
     else:
         return render(request, 'register_pekerja.html')
+from django.db import connection, transaction
 
 def profile_pekerja(request):
     # Fetch user profile details from the database
@@ -143,21 +144,23 @@ def profile_pekerja(request):
                 p.npwp,
                 p.linkfoto AS photo_url,
                 p.rating,
-                (SELECT COUNT(*) FROM jmlpsnanselesai WHERE id_pekerja = us.id AND status = 'Selesai') AS completed_orders_count
+                p.jmlpsnanselesai AS completed_orders_count
             FROM user_sijarta us
             JOIN pekerja p ON us.id = p.id
             WHERE us.id = %s
         """, [request.user.id])
-        
+
         user_profile = cursor.fetchone()
-        
+
         # Fetch job categories
         cursor.execute("""
-            SELECT kategori 
-            FROM kategori_pekerjaan 
-            WHERE id_pekerja = %s
+            SELECT kj.namakategori
+            FROM kategori_jasa kj
+            JOIN pekerja_kategori_jasa pkj ON pkj.kategorijasaid = kj.id
+            JOIN pekerja p ON pkj.pekerjaid = p.id
+            WHERE p.id = %s
         """, [request.user.id])
-        
+
         job_categories = [row[0] for row in cursor.fetchall()]
 
     # Handle profile update
@@ -165,7 +168,7 @@ def profile_pekerja(request):
         try:
             with transaction.atomic():
                 with connection.cursor() as cursor:
-                    # Update user_sijarta table
+                    # Update user_sijarta table with POST data
                     cursor.execute("""
                         UPDATE user_sijarta
                         SET 
@@ -183,14 +186,14 @@ def profile_pekerja(request):
                         request.POST.get('address'),
                         request.user.id
                     ])
-
-                    # Update pekerja table
+                    
+                    # Update pekerja table with POST data (bank info, etc.)
                     cursor.execute("""
                         UPDATE pekerja
                         SET 
-                            namabank = %s, 
-                            nomorekening = %s, 
-                            npwp = %s, 
+                            namabank = %s,
+                            nomorrekening = %s,
+                            npwp = %s,
                             linkfoto = %s
                         WHERE id = %s
                     """, [
@@ -200,31 +203,18 @@ def profile_pekerja(request):
                         request.POST.get('photo_url'),
                         request.user.id
                     ])
-            
-            messages.success(request, "Profile updated successfully.")
-            return redirect('authentication:profile_pekerja')
-        
         except Exception as e:
-            messages.error(request, f"Error updating profile: {str(e)}")
-    
-    # Prepare context for template
+            # Handle exception if any error occurs during the transaction
+            print(f"Error updating profile: {e}")
+            # Optionally, you can add logic to handle failed transactions (e.g., rolling back changes)
+            pass
+
+    # Pass user profile data and job categories to the template
     context = {
-        'user_profile': {
-            'full_name': user_profile[1],
-            'gender': user_profile[2],
-            'phone_number': user_profile[3],
-            'birthdate': user_profile[4],
-            'address': user_profile[5],
-            'bank_name': user_profile[6],
-            'account_number': user_profile[7],
-            'npwp': user_profile[8],
-            'photo_url': user_profile[9],
-            'rating': user_profile[10],
-            'completed_orders_count': user_profile[11],
-            'job_categories': job_categories
-        }
+        'user_profile': user_profile,
+        'job_categories': job_categories
     }
-    
+
     return render(request, 'profile_pekerja.html', context)
 
 def register_pengguna(request):
