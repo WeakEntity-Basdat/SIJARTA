@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block meta %}
+<title>Update Profile</title>
+{% endblock meta %}
+
+{% block content %}
+<div class="container mx-auto mt-10">
+    <h2 class="text-2xl mb-4">Update Your Profile</h2>
+
+    <form method="POST" action="{% url 'update_profile' %}" class="space-y-4">
+        {% csrf_token %}
+        
+        <div>
+            <label for="full_name" class="block">Full Name</label>
+            <input type="text" name="full_name" id="full_name" value="{{ user_profile.full_name }}" class="input" required>
+        </div>
+
+        <div>
+            <label for="gender" class="block">Gender</label>
+            <select name="gender" id="gender" class="input" required>
+                <option value="Male" {% if user_profile.gender == "Male" %}selected{% endif %}>Male</option>
+                <option value="Female" {% if user_profile.gender == "Female" %}selected{% endif %}>Female</option>
+                <option value="Other" {% if user_profile.gender == "Other" %}selected{% endif %}>Other</option>
+            </select>
+        </div>
+
+        <div>
+            <label for="phone_number" class="block">Phone Number</label>
+            <input type="text" name="phone_number" id="phone_number" value="{{ user_profile.phone_number }}" class="input" required>
+        </div>
+
+        <div>
+            <label for="birthdate" class="block">Birthdate</label>
+            <input type="date" name="birthdate" id="birthdate" value="{{ user_profile.birthdate }}" class="input" required>
+        </div>
+
+        <div>
+            <label for="address" class="block">Address</label>
+            <textarea name="address" id="address" class="input" rows="4" required>{{ user_profile.address }}</textarea>
+        </div>
+
+        <div>
+            <label for="bank_name" class="block">Bank Name</label>
+            <input type="text" name="bank_name" id="bank_name" value="{{ user_profile.bank_name }}" class="input" required>
+        </div>
+
+        <div>
+            <label for="account_number" class="block">Account Number</label>
+            <input type="text" name="account_number" id="account_number" value="{{ user_profile.account_number }}" class="input" required>
+        </div>
+
+        <div>
+            <label for="npwp" class="block">NPWP</label>
+            <input type="text" name="npwp" id="npwp" value="{{ user_profile.npwp }}" class="input" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Update Profile</button>
+    </form>
+</div>
+{% endblock %}

@@ -30,6 +30,113 @@ from django.db import connection
 from django.shortcuts import redirect
 from django.contrib.auth import logout
 from django.contrib import messages
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.db import connection
+from django.http import HttpResponse
+from collections import namedtuple
+
+def update_profile(request):
+    # Check if the user is logged in
+    if 'user_id' not in request.session:
+        messages.error(request, "Please log in first.")
+        return redirect('authentication:login_user')
+
+    # Get the user_id from the session
+    user_id = request.session.get('user_id')
+
+    # Create a namedtuple to mimic an object with attributes
+    UserProfile = namedtuple('UserProfile', [
+        'full_name', 'gender', 'phone_number', 'birthdate', 'address',
+        'saldo_mypay', 'bank_name', 'account_number', 'npwp', 'photo_url',
+        'rating', 'completed_orders_count', 'job_categories'
+    ])
+
+    # Initialize the user_profile variable
+    user_profile = None
+
+    # Fetch user profile from the database
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT
+                us.nama AS full_name,
+                us.jeniskelamin AS gender,
+                us.nohp AS phone_number,
+                us.tgllahir AS birthdate,
+                us.alamat AS address,
+                0 AS saldo_mypay,  # Placeholder if needed
+                p.namabank AS bank_name,
+                p.nomorrekening AS account_number,
+                p.npwp,
+                p.linkfoto AS photo_url,
+                p.rating,
+                p.jmlpsnanselesai AS completed_orders_count
+            FROM user_sijarta us
+            JOIN pekerja p ON us.id = p.id
+            WHERE us.id = %s
+        """, [user_id])
+
+        profile_data = cursor.fetchone()
+
+        # Fetch job categories
+        cursor.execute("""
+            SELECT kj.namakategori
+            FROM kategori_jasa kj
+            JOIN pekerja_kategori_jasa pkj ON pkj.kategorijasaid = kj.id
+            WHERE pkj.pekerjaid = %s
+        """, [user_id])
+
+        job_categories = [row[0] for row in cursor.fetchall()]
+
+        # Combine profile data and job categories
+        if profile_data:
+            user_profile = UserProfile(
+                full_name=profile_data[0],
+                gender=profile_data[1],
+                phone_number=profile_data[2],
+                birthdate=profile_data[3],
+                address=profile_data[4],
+                saldo_mypay=profile_data[5],
+                bank_name=profile_data[6],
+                account_number=profile_data[7],
+                npwp=profile_data[8],
+                photo_url=profile_data[9],
+                rating=profile_data[10],
+                completed_orders_count=profile_data[11],
+                job_categories=job_categories
+            )
+
+    # If the request is a POST, update the user's profile
+    if request.method == 'POST':
+        # Get the updated values from the form
+        updated_full_name = request.POST.get('full_name')
+        updated_gender = request.POST.get('gender')
+        updated_phone_number = request.POST.get('phone_number')
+        updated_birthdate = request.POST.get('birthdate')
+        updated_address = request.POST.get('address')
+        updated_bank_name = request.POST.get('bank_name')
+        updated_account_number = request.POST.get('account_number')
+        updated_npwp = request.POST.get('npwp')
+
+        # Update the user profile in the database
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                UPDATE user_sijarta
+                SET nama = %s, jeniskelamin = %s, nohp = %s, tgllahir = %s, alamat = %s
+                WHERE id = %s
+            """, [updated_full_name, updated_gender, updated_phone_number, updated_birthdate, updated_address, user_id])
+
+            cursor.execute("""
+                UPDATE pekerja
+                SET namabank = %s, nomorrekening = %s, npwp = %s
+                WHERE id = %s
+            """, [updated_bank_name, updated_account_number, updated_npwp, user_id])
+
+        messages.success(request, "Your profile has been updated successfully.")
+        return redirect('profile_pekerja')  # Redirect to the profile page after updating
+
+    # If the method is GET, render the profile update form
+    return render(request, 'update_profile.html', {'user_profile': user_profile})
 
 def logout_user(request):
     print("log out masuk")
@@ -127,18 +234,37 @@ def register_pekerja(request):
         return render(request, 'register_pekerja.html')
 from django.db import connection, transaction
 
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.db import connection
+from collections import namedtuple
+
 def profile_pekerja(request):
-    # Fetch user profile details from the database
+    # Check if user is logged in via session
+    if 'user_id' not in request.session:
+        messages.error(request, "Please log in first.")
+        return redirect('authentication:login_user')
+
+    # Use the user_id from session instead of request.user.id
+    user_id = request.session.get('user_id')
+
+    # Create a namedtuple to mimic an object with attributes
+    UserProfile = namedtuple('UserProfile', [
+        'full_name', 'gender', 'phone_number', 'birthdate', 'address',
+        'saldo_mypay', 'bank_name', 'account_number', 'npwp', 'photo_url',
+        'rating', 'completed_orders_count', 'job_categories'
+    ])
+
     with connection.cursor() as cursor:
-        # Query to fetch pekerja profile details
+        # Fetch pekerja profile details
         cursor.execute("""
-            SELECT 
-                us.id, 
-                us.nama AS full_name, 
-                us.jeniskelamin AS gender, 
-                us.nohp AS phone_number, 
-                us.tgllahir AS birthdate, 
+            SELECT
+                us.nama AS full_name,
+                us.jeniskelamin AS gender,
+                us.nohp AS phone_number,
+                us.tgllahir AS birthdate,
                 us.alamat AS address,
+                0 AS saldo_mypay,  
                 p.namabank AS bank_name,
                 p.nomorrekening AS account_number,
                 p.npwp,
@@ -148,74 +274,41 @@ def profile_pekerja(request):
             FROM user_sijarta us
             JOIN pekerja p ON us.id = p.id
             WHERE us.id = %s
-        """, [request.user.id])
+        """, [user_id])
 
-        user_profile = cursor.fetchone()
+        profile_data = cursor.fetchone()
 
         # Fetch job categories
         cursor.execute("""
             SELECT kj.namakategori
             FROM kategori_jasa kj
             JOIN pekerja_kategori_jasa pkj ON pkj.kategorijasaid = kj.id
-            JOIN pekerja p ON pkj.pekerjaid = p.id
-            WHERE p.id = %s
-        """, [request.user.id])
+            WHERE pkj.pekerjaid = %s
+        """, [user_id])
 
-        job_categories = [row[0] for row in cursor.fetchall()]
+        job_categories = [row[0] for row in cursor.fetchall()]  # Collect all categories
 
-    # Handle profile update
-    if request.method == 'POST':
-        try:
-            with transaction.atomic():
-                with connection.cursor() as cursor:
-                    # Update user_sijarta table with POST data
-                    cursor.execute("""
-                        UPDATE user_sijarta
-                        SET 
-                            nama = %s, 
-                            jeniskelamin = %s, 
-                            nohp = %s, 
-                            tgllahir = %s, 
-                            alamat = %s
-                        WHERE id = %s
-                    """, [
-                        request.POST.get('full_name'),
-                        request.POST.get('gender'),
-                        request.POST.get('phone_number'),
-                        request.POST.get('birthdate'),
-                        request.POST.get('address'),
-                        request.user.id
-                    ])
-                    
-                    # Update pekerja table with POST data (bank info, etc.)
-                    cursor.execute("""
-                        UPDATE pekerja
-                        SET 
-                            namabank = %s,
-                            nomorrekening = %s,
-                            npwp = %s,
-                            linkfoto = %s
-                        WHERE id = %s
-                    """, [
-                        request.POST.get('bank_name'),
-                        request.POST.get('account_number'),
-                        request.POST.get('npwp'),
-                        request.POST.get('photo_url'),
-                        request.user.id
-                    ])
-        except Exception as e:
-            # Handle exception if any error occurs during the transaction
-            print(f"Error updating profile: {e}")
-            # Optionally, you can add logic to handle failed transactions (e.g., rolling back changes)
-            pass
+        # Combine the profile data and job categories into the namedtuple
+        if profile_data:
+            user_profile = UserProfile(
+                full_name=profile_data[0],
+                gender=profile_data[1],
+                phone_number=profile_data[2],
+                birthdate=profile_data[3],
+                address=profile_data[4],
+                saldo_mypay=profile_data[5],  # Placeholder 0 as a default value
+                bank_name=profile_data[6],
+                account_number=profile_data[7],
+                npwp=profile_data[8],
+                photo_url=profile_data[9],
+                rating=profile_data[10],
+                completed_orders_count=profile_data[11],
+                job_categories=job_categories  # List of job categories
+            )
+        else:
+            user_profile = None
 
-    # Pass user profile data and job categories to the template
-    context = {
-        'user_profile': user_profile,
-        'job_categories': job_categories
-    }
-
-    return render(request, 'profile_pekerja.html', context)
+    return render(request, 'profile_pekerja.html', {'user_profile': user_profile})
 
 def register_pengguna(request):
     if request.method == 'POST':

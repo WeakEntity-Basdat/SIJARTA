@@ -21,7 +21,7 @@
                     {% if 'user_type' == 'pengguna' %}
                         <a class="nav-btn" href="/mypay">MyPay</a>
                         <a class="nav-btn" href="/orders">Kelola Pesanan Saya</a>
-                        <a class="nav-btn" href="/discount">Diskon</a>
+                        <a class="nav-btn" href="{% url 'discount:discount' %}">Diskon</a>
              
                     {% elif 'user_type' in request.session and request.session.user_type == 'pekerja' %}
                         <a class="nav-btn" href="/mytasks">Kelola Pekerjaan Saya</a>
@@ -42,9 +42,8 @@
                             <li><a href="{% url 'main:show_main' %}">Homepage</a></li>
                             {% if 'user_type' == 'pengguna' %}
                                 <li><a href="/mypay">MyPay</a></li>
-                                <li><a href="/mypay">MyPay</a></li>
-                                <li><a href="/orders">Kelola Pesanan Saya</a></li>
-                                <li><a href="/discount">Diskon</a></li>
+                                <li><a href="{% url 'orders:orders' %}">Kelola Pesanan Saya</a></li>
+                                <li><a href="{% url 'discount:discount' %}">Diskon</a></li>
              
                             {% elif 'user_type' in request.session and request.session.user_type == 'pekerja' %}
                                 <li><a href="/mytasks">Kelola Pekerjaan Saya</a></li>

@@ -11,5 +11,6 @@ urlpatterns = [
     path('register/register_pekerja/', register_pekerja, name='register_pekerja'),
     path('profile_pekerja/', profile_pekerja, name='profile_pekerja'),
     # path('profile/pengguna/', profile, name='profile_pengguna'),
+    path('update-profile/', update_profile, name='update_profile'),
 
 ]
