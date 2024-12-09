@@ -1,10 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transaksi MyPay</title>
-</head>
+{% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+<title>mypay</title>
+{% endblock meta %}
+
+{% block content %}
 <body>
     <h1>Form Transaksi MyPay</h1>
     <div>
@@ -12,25 +13,45 @@
         <p><strong>Nama User:</strong> {{ user.nama }}</p>
         <p><strong>Saldo User:</strong> Rp. {{ user.saldo }}</p>
     </div>
-    <form method="POST">
+    <form method="POST" class="space-y-4" action="{% url 'mypay:proses_transaksi_mypay' %}">
         {% csrf_token %}
-        <label for="kategori_transaksi">Kategori Transaksi:</label>
-        <select id="kategori_transaksi" name="kategori_transaksi" onchange="updateForm()" required>
-            <option value="" disabled selected>Pilih Kategori</option>
-            <option value="topup">TopUp MyPay</option>
-            <option value="bayar">Membayar Transaksi Jasa</option>
-            <option value="transfer">Transfer MyPay</option>
-            <option value="withdrawal">Withdrawal</option>
-        </select><br><br>
-
-        <div id="form_state">
+        <div>
+            <label for="kategori_transaksi" class="block text-sm font-medium text-gray-700">Kategori Transaksi:</label>
+            <select 
+                id="kategori_transaksi" 
+                name="kategori_transaksi" 
+                onchange="updateForm()" 
+                required 
+                class="block w-full mt-1 p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
+            >
+                <option value="" disabled selected>Pilih Kategori</option>
+                <option value="topup">TopUp MyPay</option>
+                <option value="bayar">Membayar Transaksi Jasa</option>
+                <option value="transfer">Transfer MyPay</option>
+                <option value="withdrawal">Withdrawal</option>
+            </select>
+        </div>
+    
+        <div id="form_state" class="space-y-4">
             <!-- Form dinamis akan muncul di sini -->
         </div>
-
-        <button type="submit">Submit</button>
-        <button class="button" onclick="window.location.href='{% url 'mypay:mypay_view' %}'">
-            Kembali
-        </button>
+    
+        <div class="flex space-x-4">
+            <button 
+                type="submit" 
+                class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                
+            >
+                Submit
+            </button>
+            <button 
+                type="button" 
+                class="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400" 
+                onclick="window.location.href='{% url 'mypay:mypay_view' %}'"
+            >
+                Kembali
+            </button>
+        </div>
     </form>
 
     <script>
@@ -80,3 +101,4 @@
     </script>
 </body>
 </html>
+{% endblock content %}
