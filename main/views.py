@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from .models import Category, Subcategory, ServiceSession, ServiceOrder
-from authentication.models import UserProfile
+# from authentication.models import UserProfile
 from .forms import ServiceOrderForm
 from django.contrib import messages
 
