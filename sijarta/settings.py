@@ -93,7 +93,7 @@ load_dotenv()
 # }
 
 SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-&e4dv8u1wbajaob#$#fk2j5pcrr4dq9deu$lg6&q1fas5^l++=")
-DEBUG = os.getenv("DEBUG", "False") == "True"
+# DEBUG = os.getenv("DEBUG", "False") == "True"
 
 # DATABASES = {
 #     'default': {
