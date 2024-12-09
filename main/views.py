@@ -3,6 +3,41 @@ from django.contrib.auth.decorators import login_required
 from .models import Category, Subcategory, ServiceSession, ServiceOrder
 from .forms import ServiceOrderForm
 from django.contrib import messages
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.db import connection
+
+def set_user_type(request, user_id):
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT EXISTS(SELECT 1 FROM pekerja WHERE id=%s)", [user_id])
+        if cursor.fetchone()[0]:
+            request.session['user_type'] = 'pekerja'
+        else:
+            cursor.execute("SELECT EXISTS(SELECT 1 FROM pelanggan WHERE id=%s)", [user_id])
+            if cursor.fetchone()[0]:
+                request.session['user_type'] = 'pengguna'
+            else:
+                request.session['user_type'] = 'unknown'
+
+def homepage(request):
+    # Check if user is authenticated, if so, set user type in session
+    if request.user.is_authenticated:
+        user_id = request.user.id
+        # Set the user type based on the user’s ID (this will also store it in session)
+        set_user_type(request, user_id)
+
+    # Retrieve categories from the database
+    categories = Category.objects.prefetch_related('subcategories').all()
+
+    # Get user type from the session (use default 'unknown' if not set)
+    user_type = request.session.get('user_type', 'unknown')
+
+    context = {
+        'categories': categories,
+        'user_type': user_type,
+    }
+
+    return render(request, 'homepage.html', context)
 
 def landing_page(request):
     return render(request,'main.html')
@@ -10,10 +45,15 @@ def landing_page(request):
 def show_main(request):
     return render(request,'homepage.html')
 
-def homepage(request):
-    categories = Category.objects.prefetch_related('subcategories').all()
-    user_type = 'pekerja' if request.user.is_authenticated and request.user.user_type == 'pekerja' else 'pengguna'
-    return render(request, 'homepage.html', {'categories': categories, 'user_type': user_type})
+# def homepage(request):
+#     categories = Category.objects.prefetch_related('subcategories').all()
+#     user_type = 'pekerja' if request.user.is_authenticated and request.user.user_type == 'pekerja' else 'pengguna'
+#     print(request.user.user_type)
+#     context = {
+#         'categories': categories,
+#         'user_type': user_type
+#     }
+#     return render(request, 'homepage.html', context)
 
 # def subcategory_for_user(request, subcategory_id):
 #     subcategory = get_object_or_404(Subcategory, id=subcategory_id)
