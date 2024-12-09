@@ -27,6 +27,18 @@ from django.db import connection
 from django.shortcuts import redirect, render
 from django.contrib import messages
 from django.db import connection
+from django.shortcuts import redirect
+from django.contrib.auth import logout
+from django.contrib import messages
+
+def logout_user(request):
+    print("log out masuk")
+    # Log out the current user
+    logout(request)
+    # Optionally, you can add a message to be displayed on the next page
+    messages.info(request, "You have successfully logged out.")
+    # Redirect to the homepage or login page after logout
+    return redirect('main:landing_page')  # Assuming 'login' is the name of your URL to the login page
 
 def login_user(request):
     if request.method == "POST":
@@ -71,7 +83,7 @@ def login_user(request):
     # Redirect to main if already authenticated via session
     if 'user_id' in request.session:
         return redirect("main:show_main")
-
+    print("renderred login")
     return render(request, "login.html")
 
 
@@ -114,6 +126,107 @@ def register_pekerja(request):
     else:
         return render(request, 'register_pekerja.html')
 
+def profile_pekerja(request):
+    # Fetch user profile details from the database
+    with connection.cursor() as cursor:
+        # Query to fetch pekerja profile details
+        cursor.execute("""
+            SELECT 
+                us.id, 
+                us.nama AS full_name, 
+                us.jeniskelamin AS gender, 
+                us.nohp AS phone_number, 
+                us.tgllahir AS birthdate, 
+                us.alamat AS address,
+                p.namabank AS bank_name,
+                p.nomorrekening AS account_number,
+                p.npwp,
+                p.linkfoto AS photo_url,
+                p.rating,
+                (SELECT COUNT(*) FROM jmlpsnanselesai WHERE id_pekerja = us.id AND status = 'Selesai') AS completed_orders_count
+            FROM user_sijarta us
+            JOIN pekerja p ON us.id = p.id
+            WHERE us.id = %s
+        """, [request.user.id])
+        
+        user_profile = cursor.fetchone()
+        
+        # Fetch job categories
+        cursor.execute("""
+            SELECT kategori 
+            FROM kategori_pekerjaan 
+            WHERE id_pekerja = %s
+        """, [request.user.id])
+        
+        job_categories = [row[0] for row in cursor.fetchall()]
+
+    # Handle profile update
+    if request.method == 'POST':
+        try:
+            with transaction.atomic():
+                with connection.cursor() as cursor:
+                    # Update user_sijarta table
+                    cursor.execute("""
+                        UPDATE user_sijarta
+                        SET 
+                            nama = %s, 
+                            jeniskelamin = %s, 
+                            nohp = %s, 
+                            tgllahir = %s, 
+                            alamat = %s
+                        WHERE id = %s
+                    """, [
+                        request.POST.get('full_name'),
+                        request.POST.get('gender'),
+                        request.POST.get('phone_number'),
+                        request.POST.get('birthdate'),
+                        request.POST.get('address'),
+                        request.user.id
+                    ])
+
+                    # Update pekerja table
+                    cursor.execute("""
+                        UPDATE pekerja
+                        SET 
+                            namabank = %s, 
+                            nomorekening = %s, 
+                            npwp = %s, 
+                            linkfoto = %s
+                        WHERE id = %s
+                    """, [
+                        request.POST.get('bank_name'),
+                        request.POST.get('account_number'),
+                        request.POST.get('npwp'),
+                        request.POST.get('photo_url'),
+                        request.user.id
+                    ])
+            
+            messages.success(request, "Profile updated successfully.")
+            return redirect('authentication:profile_pekerja')
+        
+        except Exception as e:
+            messages.error(request, f"Error updating profile: {str(e)}")
+    
+    # Prepare context for template
+    context = {
+        'user_profile': {
+            'full_name': user_profile[1],
+            'gender': user_profile[2],
+            'phone_number': user_profile[3],
+            'birthdate': user_profile[4],
+            'address': user_profile[5],
+            'bank_name': user_profile[6],
+            'account_number': user_profile[7],
+            'npwp': user_profile[8],
+            'photo_url': user_profile[9],
+            'rating': user_profile[10],
+            'completed_orders_count': user_profile[11],
+            'job_categories': job_categories
+        }
+    }
+    
+    return render(request, 'profile_pekerja.html', context)
+
 def register_pengguna(request):
     if request.method == 'POST':
         # User information
@@ -149,6 +262,7 @@ def register_pengguna(request):
             return redirect('authentication:register_pengguna')
     else:
         return render(request, 'register_pengguna.html')
+
 
 # def login_user(request):
 #     if request.method == "POST":
