@@ -13,7 +13,7 @@
         <p><strong>Nama User:</strong> {{ user.nama }}</p>
         <p><strong>Saldo User:</strong> Rp. {{ user.saldo }}</p>
     </div>
-    <form method="POST" class="space-y-4">
+    <form method="POST" class="space-y-4" action="{% url 'mypay:proses_transaksi_mypay' %}">
         {% csrf_token %}
         <div>
             <label for="kategori_transaksi" class="block text-sm font-medium text-gray-700">Kategori Transaksi:</label>
@@ -40,6 +40,7 @@
             <button 
                 type="submit" 
                 class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                
             >
                 Submit
             </button>
