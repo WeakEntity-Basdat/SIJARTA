@@ -1,8 +1,4 @@
-import datetime
-import re
-import uuid
 from django.shortcuts import render, redirect
-from django.db import IntegrityError, connection, InternalError
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.models import User
@@ -10,6 +6,9 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 # from authentication.forms import RegisterForm
 from django.views.decorators.csrf import csrf_exempt
+import json# auth/views.py
+from django.shortcuts import render, redirect
+from django.contrib import messages
 from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
@@ -17,26 +16,51 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.db import connection
+from django.db import connection
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.db import transaction
+from django.shortcuts import redirect
+from django.contrib.auth import authenticate, login
+from django.contrib import messages
+from django.db import connection
+from django.shortcuts import redirect, render
+from django.contrib import messages
+from django.db import connection
 
-# @csrf_exempt
-# def login(request):
-#     if request.method == 'POST':
-#         phone = request.POST.get('phone')
-#         password = request.POST.get('password')
+def login_user(request):
+    if request.method == "POST":
+        phone = request.POST.get("phone")
+        password = request.POST.get("password")
 
         # Directly query the database for the user with the given phone number and password
         with connection.cursor() as cursor:
             cursor.execute("SELECT id, nama FROM user_sijarta WHERE nohp = %s AND pwd = %s", [phone, password])
             user_row = cursor.fetchone()
 
-            # If the user is found, set up the session
+            # If the user is found, set up the session and check user type
             if user_row is not None:
                 user_id = str(user_row[0])  # Convert UUID to string
                 user_name = user_row[1]
 
+                # Store basic user information in session
                 request.session['user_id'] = user_id  # Store user ID in session as string
                 request.session['user_name'] = user_name  # Store user name in session
 
+                # Check if the user is a "pekerja" or "pengguna"
+                cursor.execute("SELECT EXISTS(SELECT 1 FROM pekerja WHERE id=%s)", [user_id])
+                is_pekerja = cursor.fetchone()[0]
+
+                if is_pekerja:
+                    request.session['user_type'] = 'pekerja'
+                else:
+                    cursor.execute("SELECT EXISTS(SELECT 1 FROM pelanggan WHERE id=%s)", [user_id])
+                    if cursor.fetchone()[0]:
+                        request.session['user_type'] = 'pengguna'
+                    else:
+                        request.session['user_type'] = 'unknown'
+
+                # Redirect to the next page or main page after successful login
                 next_page = request.GET.get("next")
                 if next_page:
                     return redirect(next_page)
@@ -49,6 +73,128 @@ from django.db import connection
         return redirect("main:show_main")
 
     return render(request, "login.html")
+
+
+def register_pekerja(request):
+    if request.method == 'POST':
+        # User information
+        nama = request.POST.get('nama')
+        password = request.POST.get('password')
+        gender = request.POST.get('gender')
+        phone = request.POST.get('phone')
+        birthdate = request.POST.get('birthdate')
+        address = request.POST.get('address')
+
+        # Pekerja specific information
+        bank = request.POST.get('bank')
+        account = request.POST.get('account')
+        npwp = request.POST.get('npwp')
+        photo_url = request.POST.get('photo_url')
+
+        try:
+            with transaction.atomic():  # Ensure the atomicity of the transaction
+                with connection.cursor() as cursor:
+                    # Insert into user_sijarta
+                    cursor.execute("""
+                        INSERT INTO user_sijarta (nama, jeniskelamin, nohp, pwd, tgllahir, alamat)
+                        VALUES (%s, %s, %s, %s, %s, %s) RETURNING id
+                    """, [nama, gender, phone, password, birthdate, address])
+                    user_id = cursor.fetchone()[0]
+
+                    # Insert into pekerja
+                    cursor.execute("""
+                        INSERT INTO pekerja (id, namabank, nomorrekening, npwp, linkfoto)
+                        VALUES (%s, %s, %s, %s, %s)
+                    """, [user_id, bank, account, npwp, photo_url])
+            messages.success(request, 'Pekerja registered successfully.')
+            return redirect('main:show_main')
+        except Exception as e:
+            messages.error(request, str(e))
+            return redirect('authentication:register_pekerja')
+    else:
+        return render(request, 'register_pekerja.html')
+
+def register_pengguna(request):
+    if request.method == 'POST':
+        # User information
+        nama = request.POST.get('nama')
+        password = request.POST.get('password')
+        gender = request.POST.get('gender')
+        phone = request.POST.get('phone')
+        birthdate = request.POST.get('birthdate')
+        address = request.POST.get('address')
+
+        # Pengguna specific information
+        level = request.POST.get('level')
+
+        try:
+            with transaction.atomic():  # Ensure the atomicity of the transaction
+                with connection.cursor() as cursor:
+                    # Insert into user_sijarta
+                    cursor.execute("""
+                        INSERT INTO user_sijarta (nama, jeniskelamin, nohp, pwd, tgllahir, alamat)
+                        VALUES (%s, %s, %s, %s, %s, %s) RETURNING id
+                    """, [nama, gender, phone, password, birthdate, address])
+                    user_id = cursor.fetchone()[0]
+
+                    # Insert into pelanggan
+                    cursor.execute("""
+                        INSERT INTO pelanggan (id, level)
+                        VALUES (%s, %s)
+                    """, [user_id, level])
+            messages.success(request, 'Pengguna registered successfully.')
+            return redirect('main:show_main')
+        except Exception as e:
+            messages.error(request, str(e))
+            return redirect('authentication:register_pengguna')
+    else:
+        return render(request, 'register_pengguna.html')
+
+# def login_user(request):
+#     if request.method == "POST":
+#         phone = request.POST.get("phone")
+#         password = request.POST.get("password")
+
+#         # Directly query the database for the user with the given phone number and password
+#         with connection.cursor() as cursor:
+#             cursor.execute("SELECT id, nama FROM user_sijarta WHERE nohp = %s AND pwd = %s", [phone, password])
+#             user_row = cursor.fetchone()
+
+#             # If the user is found, set up the session
+#             if user_row is not None:
+#                 user_id = str(user_row[0])  # Convert UUID to string
+#                 user_name = user_row[1]
+
+#                 request.session['user_id'] = user_id  # Store user ID in session as string
+#                 request.session['user_name'] = user_name  # Store user name in session
+
+#                 next_page = request.GET.get("next")
+#                 if next_page:
+#                     return redirect(next_page)
+#                 return redirect("main:show_main")
+#             else:
+#                 messages.error(request, "Incorrect phone number or password. Please try again.")
+
+#     Redirect to main if already authenticated via session
+#     if 'user_id' in request.session:
+#         return redirect("main:show_main")
+
+#     return render(request, "login.html")
+
+def set_user_type(request, user_id):
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT EXISTS(SELECT 1 FROM pekerja WHERE id=%s)", [user_id])
+        if cursor.fetchone()[0]:
+            request.session['user_type'] = 'pekerja'
+        else:
+            cursor.execute("SELECT EXISTS(SELECT 1 FROM pelanggan WHERE id=%s)", [user_id])
+            if cursor.fetchone()[0]:
+                request.session['user_type'] = 'pengguna'
+
+
+def register(request):
+    # Render the register.html page stored in your templates directory
+    return render(request, 'register.html')
 
 
 # # Create your views here.
