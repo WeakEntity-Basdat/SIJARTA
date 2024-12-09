@@ -1,10 +1,12 @@
 <!-- templates/mypay.html -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MyPay</title>
+{% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+<title>mypay</title>
+{% endblock meta %}
+
+{% block content %}
     <style>
         table {
             width: 100%;
@@ -43,10 +45,10 @@
     <h1>MyPay</h1>
     <div class="header">
         <div>
-            <h3>No HP: 08123456789</h3> 
+            <h3>No HP: {{ no_hp }}</h3> 
         </div>
         <div>
-            <h3>Saldo: Rp. 500.000</h3>
+            <h3>Saldo: {{saldo_mypay}}</h3>
         </div>
         <button class="button" onclick="window.location.href='{% url 'mypay:transaksi_mypay_view' %}'">
             Lakukan Transaksi
@@ -54,6 +56,7 @@
     </div>
 
     <h2>Riwayat Transaksi</h2>
+    {% if transactions %}
     <table>
         <thead>
             <tr>
@@ -72,5 +75,9 @@
             {% endfor %}
         </tbody>
     </table>
+    {% else %}
+    <p class="empty-message">Riwayat transaksi MyPay kosong.</p>
+    {% endif %}
 </body>
 </html>
+{% endblock content %}
