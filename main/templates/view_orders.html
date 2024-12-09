@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Daftar Pesanan Jasa</h1>
+<table>
+    <thead>
+        <tr>
+            <th>Tanggal Pemesanan</th>
+            <th>Kode Diskon</th>
+            <th>Total Pembayaran</th>
+            <th>Metode Bayar</th>
+            <th>Status</th>
+            <th>Aksi</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for order in orders %}
+        <tr>
+            <td>{{ order.2 }}</td>  <!-- Assuming order.2 is the order date -->
+            <td>{{ order.3 }}</td>  <!-- Assuming order.3 is the discount code -->
+            <td>{{ order.4 }}</td>  <!-- Assuming order.4 is the total payment -->
+            <td>{{ order.5 }}</td>  <!-- Assuming order.5 is the payment method -->
+            <td>{{ order.6 }}</td>  <!-- Assuming order.6 is the order status -->
+            <td>
+                {% if order.6 == 'Menunggu Pembayaran' or order.6 == 'Mencari Pekerja Terdekat' %}
+                    <button type="button" onclick="alert('Fungsi Batalkan Pesanan belum diimplementasikan.');">Batalkan</button>
+                {% elif order.6 == 'Pesanan Selesai' %}
+                    <button type="button" onclick="alert('Fungsi Buat Testimoni belum diimplementasikan.');">Buat Testimoni</button>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

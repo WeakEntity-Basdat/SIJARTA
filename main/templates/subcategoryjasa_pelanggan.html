@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="subcategory-detail">
+    <h1>{{ subcategory.1 }}</h1>  <!-- Assuming the name is in the second column -->
+    <p>{{ subcategory.2 }}</p>  <!-- Assuming the description is in the third column -->
+
+    <h2>Daftar Sesi Layanan</h2>
+    <ul>
+        {% for session in sessions %}
+            <li>
+                Sesi: {{ session.1 }} - Harga: {{ session.2 }} 
+                <form method="POST" action="{% url 'main:order_service' session.0 %}"> 
+                    {% csrf_token %}
+                    <button type="submit">Pesan Jasa</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <h2>Daftar Pekerja</h2>
+    <ul>
+        {% for worker in workers %}
+            <li>
+                <a href="{% url 'main:worker_profile' worker.0 %}">{{ worker.1 }}</a>  <!-- Assuming worker ID is in the first column -->
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

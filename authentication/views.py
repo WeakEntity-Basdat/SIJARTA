@@ -35,18 +35,25 @@ def login_user(request):
                 request.session['user_id'] = user_id  # Store user ID in session as string
                 request.session['user_name'] = user_name  # Store user name in session
 
-                next_page = request.GET.get("next")
-                if next_page:
-                    return redirect(next_page)
-                return redirect("main:show_main")
+                # Check user type to redirect to the appropriate homepage
+                cursor.execute("SELECT * FROM pelanggan WHERE id = %s", [user_id])
+                if cursor.fetchone():  # User is a pelanggan
+                    return redirect("main:homepage_pelanggan")
+                else:
+                    cursor.execute("SELECT * FROM pekerja WHERE id = %s", [user_id])
+                    if cursor.fetchone():  # User is a pekerja
+                        return redirect("main:homepage_pekerja")
+
+                return redirect("main:homepage")  # Default homepage if user type is not found
             else:
                 messages.error(request, "Incorrect phone number or password. Please try again.")
 
     # Redirect to main if already authenticated via session
     if 'user_id' in request.session:
-        return redirect("main:show_main")
+        return redirect("main:homepage")
 
     return render(request, "login.html")
+
 
 
 # # Create your views here.

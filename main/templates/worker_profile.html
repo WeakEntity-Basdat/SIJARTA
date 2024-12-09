@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class=" worker-profile">
+    <h1>{{ worker.1 }}</h1>  <!-- Assuming the name is in the second column -->
+    <p>Bank: {{ worker.2 }}</p>  <!-- Assuming bank name is in the third column -->
+    <p>Nomor Rekening: {{ worker.3 }}</p>  <!-- Assuming account number is in the fourth column -->
+    <p>NPWP: {{ worker.4 }}</p>  <!-- Assuming NPWP is in the fifth column -->
+    <img src="{{ worker.5 }}" alt="Profile Picture" />  <!-- Assuming profile picture URL is in the sixth column -->
+    <p>Rating: {{ worker.6 }}</p>  <!-- Assuming rating is in the seventh column -->
+    <p>Jumlah Pesanan Selesai: {{ worker.7 }}</p>  <!-- Assuming completed orders count is in the eighth column -->
+</div>
+{% endblock %}
