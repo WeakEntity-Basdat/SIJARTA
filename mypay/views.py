@@ -1,19 +1,49 @@
 from datetime import datetime
 from django.shortcuts import render
+from django.db import connection
 
 def mypay_view(request):
-    # Contoh data yang dikirim ke template
-    saldo = 500000  # Saldo dummy
-    riwayat_transaksi = [
-        {'nominal': '+100000', 'tanggal': '2024-11-01', 'kategori': 'Top Up'},
-        {'nominal': '-50000', 'tanggal': '2024-11-05', 'kategori': 'Pembayaran'},
-        {'nominal': '+200000', 'tanggal': '2024-11-10', 'kategori': 'Refund'},
+    user_id = request.user.id
+    # Contoh data yang dikirim ke 
+    with connection.cursor() as cursor:
+        cursor.execute(
+            """
+            SELECT nohp, saldomypay 
+            FROM user_sijarta 
+            WHERE id = %s
+            """,
+            [user_id]
+        )
+    user_data = cursor.fetchone()
+    no_hp = user_data[0] if user_data else "Tidak ditemukan"
+    saldo_mypay = user_data[1] if user_data else 0
+    
+    with connection.cursor() as cursor:
+        cursor.execute(
+            """
+            SELECT nominal, tgl, kategori_tr_mypay 
+            FROM tr_mypay 
+            WHERE user_id = %s
+            ORDER BY tanggal DESC
+            """,
+            [user_id]
+        )
+        transaction_history = cursor.fetchall()
+        
+    transactions = [
+        {"nominal": row[0], "tanggal": row[1], "kategori": row[2]}
+        for row in transaction_history
     ]
-    return render(request, 'mypay.html', {
-        'user': request.user,
-        'saldo': saldo,
-        'riwayat_transaksi': riwayat_transaksi
-    })
+    
+    if not transactions:
+        transactions = None
+
+    context = {
+        "no_hp": no_hp,
+        "saldo_mypay": saldo_mypay,
+        "transactions": transactions,
+    }
+    return render(request, "mypay.html", context)
     
 def transaksi_mypay_view(request):
     if request.method == 'POST':
