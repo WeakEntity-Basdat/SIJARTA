@@ -1,75 +1,107 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Status Pekerjaan Jasa</title>
-</head>
+{% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+<title>mypay</title>
+{% endblock meta %}
+
+{% block content %}
 <body>
     <h1>Status Pekerjaan Jasa</h1>
-    <form method="GET">
-        <label for="nama_jasa">Nama Jasa:</label>
-        <input type="text" id="nama_jasa" name="nama_jasa" placeholder="Cari nama jasa">
+    <form method="GET" class="flex flex-col gap-4 mb-6">
+        <label for="nama_jasa" class="block text-sm font-medium text-gray-700">Nama Jasa:</label>
+        <input 
+            type="text" 
+            id="nama_jasa" 
+            name="nama_jasa" 
+            placeholder="Cari nama jasa"
+            class="block w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
+        >
         
-        <label for="status_pesanan">Status Pesanan:</label>
-        <select id="status_pesanan" name="status_pesanan">
+        <label for="status_pesanan" class="block text-sm font-medium text-gray-700">Status Pesanan:</label>
+        <select 
+            id="status_pesanan" 
+            name="status_pesanan"
+            class="block w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
+        >
             <option value="" disabled selected>Pilih Status</option>
             <option value="Menunggu Pekerja Berangkat">Menunggu Pekerja Berangkat</option>
             <option value="Pekerja Tiba Di Lokasi">Pekerja Tiba Di Lokasi</option>
             <option value="Pelayanan Jasa Sedang Dilakukan">Pelayanan Jasa Sedang Dilakukan</option>
             <option value="Pesanan Selesai">Pesanan Selesai</option>
         </select>
-
-        <button type="submit">Search</button>
+    
+        <button 
+            type="submit"
+            class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
+            Search
+        </button>
     </form>
 
     <h2>Daftar Pesanan</h2>
-    <table border="1" style="width: 100%; border-collapse: collapse;">
-        <thead>
-            <tr>
-                <th>Nama Subkategori Pesanan</th>
-                <th>Nama Pelanggan</th>
-                <th>Tanggal Pemesanan</th>
-                <th>Tanggal Pekerjaan</th>
-                <th>Total Biaya</th>
-                <th>Status Pesanan</th>
-                <th>Update Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for pesanan in pesanan_list %}
-            <tr>
-                <td>{{ pesanan.nama_subkategori }}</td>
-                <td>{{ pesanan.pelanggan }}</td>
-                <td>{{ pesanan.tanggal_pemesanan }}</td>
-                <td>{{ pesanan.tanggal_pekerjaan }}</td>
-                <td>Rp. {{ pesanan.total_biaya }}</td>
-                <td>{{ pesanan.status }}</td>
-                <td>
-                    {% if pesanan.status == "Menunggu Pekerja Berangkat" %}
-                    <form method="POST" action="{% url 'pekerjajasa:update_status_view' pesanan.id %}">
-                        {% csrf_token %}
-                        <button type="submit">Tiba Di Lokasi</button>
-                    </form>
-                    {% elif pesanan.status == "Pekerja Tiba Di Lokasi" %}
-                    <form method="POST" action="{% url 'pekerjajasa:update_status_view' pesanan.id %}">
-                        {% csrf_token %}
-                        <button type="submit">Melakukan Pelayanan Jasa</button>
-                    </form>
-                    {% elif pesanan.status == "Pelayanan Jasa Sedang Dilakukan" %}
-                    <form method="POST" action="{% url 'pekerjajasa:update_status_view' pesanan.id %}">
-                        {% csrf_token %}
-                        <button type="submit">Selesai Melakukan Pelayanan</button>
-                    </form>
-                    {% endif %}
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="7">Tidak ada pesanan ditemukan</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+   <table class="w-full border border-gray-300 border-collapse mb-6">
+    <thead class="bg-gray-100">
+        <tr>
+            <th class="border border-gray-300 px-4 py-2">Nama Subkategori Pesanan</th>
+            <th class="border border-gray-300 px-4 py-2">Nama Pelanggan</th>
+            <th class="border border-gray-300 px-4 py-2">Tanggal Pemesanan</th>
+            <th class="border border-gray-300 px-4 py-2">Tanggal Pekerjaan</th>
+            <th class="border border-gray-300 px-4 py-2">Total Biaya</th>
+            <th class="border border-gray-300 px-4 py-2">Status Pesanan</th>
+            <th class="border border-gray-300 px-4 py-2">Update Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for pesanan in pesanan_list %}
+        <tr class="even:bg-gray-50">
+            <td class="border border-gray-300 px-4 py-2">{{ pesanan.nama_subkategori }}</td>
+            <td class="border border-gray-300 px-4 py-2">{{ pesanan.pelanggan }}</td>
+            <td class="border border-gray-300 px-4 py-2">{{ pesanan.tanggal_pemesanan }}</td>
+            <td class="border border-gray-300 px-4 py-2">{{ pesanan.tanggal_pekerjaan }}</td>
+            <td class="border border-gray-300 px-4 py-2">Rp. {{ pesanan.total_biaya }}</td>
+            <td class="border border-gray-300 px-4 py-2">{{ pesanan.status }}</td>
+            <td class="border border-gray-300 px-4 py-2">
+                {% if pesanan.status == "Menunggu Pekerja Berangkat" %}
+                <form method="POST" action="{% url 'pekerjajasa:update_status_view' pesanan.id %}">
+                    {% csrf_token %}
+                    <button 
+                        type="submit" 
+                        class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                    >
+                        Tiba Di Lokasi
+                    </button>
+                </form>
+                {% elif pesanan.status == "Pekerja Tiba Di Lokasi" %}
+                <form method="POST" action="{% url 'pekerjajasa:update_status_view' pesanan.id %}">
+                    {% csrf_token %}
+                    <button 
+                        type="submit" 
+                        class="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600"
+                    >
+                        Melakukan Pelayanan Jasa
+                    </button>
+                </form>
+                {% elif pesanan.status == "Pelayanan Jasa Sedang Dilakukan" %}
+                <form method="POST" action="{% url 'pekerjajasa:update_status_view' pesanan.id %}">
+                    {% csrf_token %}
+                    <button 
+                        type="submit" 
+                        class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                    >
+                        Selesai Melakukan Pelayanan
+                    </button>
+                </form>
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="7" class="text-center py-4">Tidak ada pesanan ditemukan</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 </body>
 </html>
+{% endblock content %}

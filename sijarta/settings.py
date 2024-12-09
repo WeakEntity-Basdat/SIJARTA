@@ -1,3 +1,7 @@
+import os
+from urllib.parse import urlparse
+from dotenv import load_dotenv
+from pathlib import Path
 """
 Django settings for sijarta project.
 
@@ -10,10 +14,6 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
-from os import getenv
-import os
-from urllib.parse import urlparse
-from dotenv import load_dotenv
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -83,6 +83,8 @@ load_dotenv()
 SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
+load_dotenv()
+
 
 
 # Replace the DATABASES section of your settings.py with this
@@ -111,6 +113,38 @@ DATABASES = {
 #         "NAME": BASE_DIR / "db.sqlite3",
 #     }
 # }
+
+SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-&e4dv8u1wbajaob#$#fk2j5pcrr4dq9deu$lg6&q1fas5^l++=")
+# DEBUG = os.getenv("DEBUG", "False") == "True"
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': os.getenv("DB_NAME"),
+#         'USER': os.getenv("DB_USER"),
+#         'PASSWORD': os.getenv("DB_PASSWORD"),
+#         'HOST': os.getenv("DB_HOST"),
+#         'PORT': os.getenv("DB_PORT"),
+#     }
+# }
+
+# Add these at the top of your settings.py
+from os import getenv
+from dotenv import load_dotenv
+
+# Replace the DATABASES section of your settings.py with this
+tmpPostgres = urlparse(getenv("DATABASE_URL"))
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': tmpPostgres.path.replace('/', ''),
+        'USER': tmpPostgres.username,
+        'PASSWORD': tmpPostgres.password,
+        'HOST': tmpPostgres.hostname,
+        'PORT': 5432,
+    }
+}
 
 
 # Password validation

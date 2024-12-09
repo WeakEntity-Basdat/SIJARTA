@@ -1,10 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pekerjaan Jasa</title>
-</head>
+{% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+<title>mypay</title>
+{% endblock meta %}
+
+{% block content %}
 <body>
     <h1>Pekerjaan Jasa</h1>
     <form method="GET">
@@ -22,43 +23,43 @@
             <!-- Subkategori akan diperbarui dengan JavaScript -->
         </select>
 
-        <button type="submit">Search</button>
+        <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Search</button>
     </form>
 
     <h2>Hasil Pencarian</h2>
-    <table border="1" style="width: 100%; border-collapse: collapse;">
+    <table class="w-full border border-gray-300 border-collapse">
         <thead>
             <tr>
-                <th>Nama Subkategori Pesanan</th>
-                <th>Nama Pelanggan</th>
-                <th>Tanggal Pemesanan</th>
-                <th>Tanggal Pekerjaan</th>
-                <th>Total Biaya</th>
-                <th>Aksi</th>
+                <th class="border border-gray-300 px-4 py-2">Nama Subkategori Pesanan</th>
+                <th class="border border-gray-300 px-4 py-2">Nama Pelanggan</th>
+                <th class="border border-gray-300 px-4 py-2">Tanggal Pemesanan</th>
+                <th class="border border-gray-300 px-4 py-2">Tanggal Pekerjaan</th>
+                <th class="border border-gray-300 px-4 py-2">Total Biaya</th>
+                <th class="border border-gray-300 px-4 py-2">Aksi</th>
             </tr>
         </thead>
         <tbody>
             {% for pesanan in pesanan_list %}
             <tr>
-                <td>{{ pesanan.nama_subkategori }}</td>
-                <td>{{ pesanan.pelanggan }}</td>
-                <td>{{ pesanan.tanggal_pemesanan }}</td>
-                <td>{{ pesanan.tanggal_pekerjaan }}</td>
-                <td>Rp. {{ pesanan.total_biaya }}</td>
-                <td>
+                <td class="border border-gray-300 px-4 py-2">{{ pesanan.nama_subkategori }}</td>
+                <td class="border border-gray-300 px-4 py-2">{{ pesanan.pelanggan }}</td>
+                <td class="border border-gray-300 px-4 py-2">{{ pesanan.tanggal_pemesanan }}</td>
+                <td class="border border-gray-300 px-4 py-2">{{ pesanan.tanggal_pekerjaan }}</td>
+                <td class="border border-gray-300 px-4 py-2">Rp. {{ pesanan.total_biaya }}</td>
+                <td class="border border-gray-300 px-4 py-2">
                     {% if pesanan.status == "Mencari Pekerja Terdekat" %}
                     <form method="POST" action="{% url 'pekerjajasa:kerjakan_pesanan_view' pesanan.id %}">
                         {% csrf_token %}
-                        <button type="submit">Kerjakan Pesanan</button>
+                        <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">Kerjakan Pesanan</button>
                     </form>
                     {% else %}
-                    <button disabled>Sedang Dikerjakan</button>
+                    <button disabled class="px-4 py-2 bg-gray-300 text-gray-700 rounded cursor-not-allowed">Sedang Dikerjakan</button>
                     {% endif %}
                 </td>
             </tr>
             {% empty %}
             <tr>
-                <td colspan="6">Tidak ada pesanan yang ditemukan</td>
+                <td colspan="6" class="text-center py-4">Tidak ada pesanan yang ditemukan</td>
             </tr>
             {% endfor %}
         </tbody>
@@ -83,3 +84,4 @@
     </script>
 </body>
 </html>
+{% endblock content %}
