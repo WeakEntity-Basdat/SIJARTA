@@ -1,7 +1,8 @@
 from django.shortcuts import render
-
+from django.db import connection
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
+from datetime import datetime
 
 def pekerjaan_jasa_view(request):
     kategori_id = request.GET.get("kategori")
@@ -58,37 +59,72 @@ pesanan_list = [
 ]
 
 def status_pekerjaan_jasa_view(request):
+    user_id = request.session['user_id']
+    query = """
+        SELECT DISTINCT ON (p.id) p.id, s.namasubkategori, u.nama AS pelanggan, p.tglpemesanan, p.tglpekerjaan, p.totalbiaya, st.status
+        FROM tr_pemesanan_jasa p
+        JOIN subkategori_jasa s ON p.idkategorijasa = s.id
+        JOIN user_sijarta u ON p.idpelanggan = u.id
+        JOIN tr_pemesanan_status ps ON p.id = ps.idtrpemesanan
+        JOIN status_pesanan st ON ps.idstatus = st.id
+        where p.idpekerja = %s
+        ORDER BY p.id, ps.tglwaktu DESC
+    """
     
-    # Filter berdasarkan nama jasa atau status pesanan
-    nama_jasa = request.GET.get("nama_jasa")
-    status_pesanan = request.GET.get("status_pesanan")
-
-    filtered_pesanan = pesanan_list
-
-    if nama_jasa:
-        filtered_pesanan = [p for p in filtered_pesanan if nama_jasa.lower() in p["nama_subkategori"].lower()]
-
-    if status_pesanan:
-        filtered_pesanan = [p for p in filtered_pesanan if p["status"] == status_pesanan]
-
+    with connection.cursor() as cursor:
+        cursor.execute(query, [user_id])
+        pesanan_list = [
+            {
+                'id': row[0],
+                'nama_subkategori': row[1],
+                'pelanggan': row[2],
+                'tanggal_pemesanan': row[3],
+                'tanggal_pekerjaan': row[4],
+                'total_biaya': row[5],
+                'status' : row[6]
+            } for row in cursor.fetchall()
+        ]
     return render(request, 'status_pekerjaan_jasa.html', {
-        'pesanan_list': filtered_pesanan
-    })
-
+        'pesanan_list': pesanan_list,})
+    
 def update_status_view(request, pesanan_id):
-    pesanan = next((p for p in pesanan_list if p["id"] == pesanan_id), None)
-    if not pesanan:
-        return redirect('status_pekerjaan_jasa_view')
+    current_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT idstatus FROM tr_pemesanan_status WHERE idtrpemesanan = %s ORDER BY tglwaktu DESC", [pesanan_id])
+        status_terkini = cursor.fetchone()
+        
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT status FROM status_pesanan WHERE id = %s", [status_terkini])
+        nama_status_terkini = cursor.fetchone()
+        print(nama_status_terkini[0])
 
-    current_status = pesanan["status"]
-    if current_status == "Menunggu Pekerja Berangkat":
-        pesanan["status"] = "Pekerja Tiba Di Lokasi"
-    elif current_status == "Pekerja Tiba Di Lokasi":
-        pesanan["status"] = "Pelayanan Jasa Sedang Dilakukan"
-    elif current_status == "Pelayanan Jasa Sedang Dilakukan":
-        pesanan["status"] = "Pesanan Selesai"
+    if nama_status_terkini[0] == "Mencari Pekerja Terdekat":
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "INSERT INTO tr_pemesanan_status (idtrpemesanan, idstatus, tglwaktu) VALUES (%s, 'f162613d-fba3-459b-abf6-4cd68825d0cf', %s)",
+                [pesanan_id, current_date]
+            )
+            
+    elif nama_status_terkini[0] == "Menunggu Pekerja Berangkat":
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "INSERT INTO tr_pemesanan_status (idtrpemesanan, idstatus, tglwaktu) VALUES (%s, '85714b50-6e44-437f-91a6-d03824954816', %s)",
+                [pesanan_id, current_date]
+            )
+    elif nama_status_terkini[0] == "Pekerja Tiba Di Lokasi":
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "INSERT INTO tr_pemesanan_status (idtrpemesanan, idstatus, tglwaktu) VALUES (%s, 'f8e46719-f3f6-46ff-82ce-91403953cc31', %s)",
+                [pesanan_id, current_date]
+            )
+    elif nama_status_terkini[0] == "Pelayanan Jasa Sedang Dilakukan":
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "INSERT INTO tr_pemesanan_status (idtrpemesanan, idstatus, tglwaktu) VALUES (%s, 'b2237437-3daa-4b2c-bc4a-14b01025c7ed', %s)",
+                [pesanan_id, current_date]
+            )
 
-    return redirect('status_pekerjaan_jasa_view')
+    return redirect('pekerjajasa:status_pekerjaan_jasa_view')
 
 
 # Create your views here.

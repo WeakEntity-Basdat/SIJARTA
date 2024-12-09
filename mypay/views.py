@@ -67,11 +67,11 @@ def transaksi_mypay_view(request):
         
     with connection.cursor() as cursor:
         cursor.execute("""
-            SELECT tpj.id, kj.namakategori, tpj.totalbiaya
-            FROM tr_pemesanan_jasa tpj
-            JOIN kategori_jasa kj ON tpj.id = kj.id
-            JOIN metode_bayar mb ON tpj.idmetodebayar = mb.id
-            WHERE tpj.idpelanggan = %s AND mb.nama = 'MyPay'
+        SELECT tpj.id, kj.namakategori, tpj.totalbiaya
+        FROM tr_pemesanan_jasa tpj
+        JOIN kategori_jasa kj ON tpj.idkategorijasa = kj.id  
+        JOIN metode_bayar mb ON tpj.idmetodebayar = mb.id
+        WHERE tpj.idpelanggan = %s AND mb.nama = 'MyPay'
         """, [user_id])  # Menggunakan user_id dari session
         data_transaksi = cursor.fetchall()
         jasa_list = [
