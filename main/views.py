@@ -17,7 +17,7 @@ def set_user_type(request, user_id):
             if cursor.fetchone()[0]:
                 request.session['user_type'] = 'pengguna'
             else:
-                request.session['user_type'] = 'unknown'
+                return render(request, 'homepage.html')
 
 def homepage(request):
     # Check if user is authenticated, if so, set user type in session
